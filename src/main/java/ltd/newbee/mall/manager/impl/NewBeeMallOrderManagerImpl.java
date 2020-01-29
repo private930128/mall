@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 /**
  * Created by zhanghenan on 2020/1/21.
  */
-@Service
-public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
-}
+//@Service
+//public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
+//}

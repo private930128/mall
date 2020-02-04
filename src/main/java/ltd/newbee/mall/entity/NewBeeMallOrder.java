@@ -27,6 +27,8 @@ public class NewBeeMallOrder {
 
     private Byte isDeleted;
 
+    private Integer channelId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -120,6 +122,14 @@ public class NewBeeMallOrder {
         this.isDeleted = isDeleted;
     }
 
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -153,6 +163,7 @@ public class NewBeeMallOrder {
         sb.append(", extraInfo=").append(extraInfo);
         sb.append(", userAddress=").append(userAddress);
         sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", channelId=").append(channelId);
         sb.append(", createTime=").append(createTime);
         sb.append(", updateTime=").append(updateTime);
         sb.append("]");

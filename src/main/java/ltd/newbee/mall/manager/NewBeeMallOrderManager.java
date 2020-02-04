@@ -1,17 +1,21 @@
 package ltd.newbee.mall.manager;
 
+import ltd.newbee.mall.controller.vo.NewBeeMallOrderDetailVO;
+import ltd.newbee.mall.controller.vo.NewBeeMallShoppingCartItemVO;
+import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
 import ltd.newbee.mall.entity.NewBeeMallOrder;
+import ltd.newbee.mall.util.PageQueryUtil;
+import ltd.newbee.mall.util.PageResult;
 
 import java.util.List;
 
-/**
- * Created by zhanghenan on 2020/1/21.
- */
 public interface NewBeeMallOrderManager {
 
-    void createOrder();
+    String createOrder(NewBeeMallUserVO user, List<NewBeeMallShoppingCartItemVO> myShoppingCartItems);
 
-    NewBeeMallOrder getOrderInfoById();
+    NewBeeMallOrderDetailVO getOrderDetailByOrderNo(String orderNo, Long userId);
 
-    List<NewBeeMallOrder> listOrder();
+    PageResult getMyOrders(PageQueryUtil pageUtil);
+
+    String cancelOrder(String orderNo, Long userId);
 }

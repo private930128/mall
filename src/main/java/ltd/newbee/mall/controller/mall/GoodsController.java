@@ -1,5 +1,7 @@
 package ltd.newbee.mall.controller.mall;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.controller.vo.NewBeeMallGoodsDetailVO;
 import ltd.newbee.mall.controller.vo.SearchPageCategoryVO;
@@ -12,13 +14,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+
+@RestController
+@RequestMapping
+@Api(value ="商品信息")
 public class GoodsController {
 
     @Resource
@@ -27,6 +34,7 @@ public class GoodsController {
     private NewBeeMallCategoryService newBeeMallCategoryService;
 
     @GetMapping({"/search", "/search.html"})
+    @ApiOperation(value = "查询产品信息", notes = "查询产品信息")
     public String searchPage(@RequestParam Map<String, Object> params, HttpServletRequest request) {
         if (StringUtils.isEmpty(params.get("page"))) {
             params.put("page", 1);

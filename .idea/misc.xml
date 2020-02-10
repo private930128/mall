@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EclipseCodeFormatter">
+    <option name="defaultSettings" value="true" />
+    <option name="eclipseVersion" value="ECLIPSE_44" />
+    <option name="formatter" value="ECLIPSE" />
+    <option name="id" value="1511927769301" />
+    <option name="importOrderConfigFilePath" value="E:/Lenovo/Java_formatter_GoogleStyle.xml" />
+    <option name="importOrderFromFile" value="true" />
+    <option name="importOrdering" value="ECLIPSE_44" />
+    <option name="name" value="default" />
+    <option name="pathToConfigFileJava" value="E:/Lenovo/Java_formatter_GoogleStyle.xml" />
+    <option name="selectedJavaProfile" value="GoogleStyle" />
+    <option name="useOldEclipseJavaFormatter" value="true" />
+  </component>
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>

@@ -1,13 +1,18 @@
 package ltd.newbee.mall.controller.mall;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
 import ltd.newbee.mall.entity.MallUser;
+import ltd.newbee.mall.properties.SmsProperties;
 import ltd.newbee.mall.service.NewBeeMallUserService;
+import ltd.newbee.mall.service.fegin.SmsApiService;
 import ltd.newbee.mall.util.MD5Util;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Controller
+@Api(value ="商品信息")
 public class PersonalController {
 
     @Resource
@@ -120,5 +127,16 @@ public class PersonalController {
             Result result = ResultGenerator.genSuccessResult();
             return result;
         }
+    }
+
+    @Autowired
+    private SmsApiService smsApiService;
+    @Autowired
+    private SmsProperties smsProperties;
+    @GetMapping(value = "test")
+    @ApiOperation(value = "测试短信", notes = "测试短信")
+    public String test() {
+        String msg =  this.smsApiService.sendMessage(this.smsProperties.requestParam("18611936357","123456"));
+        return msg;
     }
 }

@@ -16,6 +16,8 @@ public class NewBeeMallUserVO implements Serializable {
 
     private int shopCartItemCount;
 
+    private Integer channelId;
+
     public Long getUserId() {
         return userId;
     }
@@ -62,5 +64,13 @@ public class NewBeeMallUserVO implements Serializable {
 
     public void setShopCartItemCount(int shopCartItemCount) {
         this.shopCartItemCount = shopCartItemCount;
+    }
+
+    public Integer getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(Integer channelId) {
+        this.channelId = channelId;
     }
 }

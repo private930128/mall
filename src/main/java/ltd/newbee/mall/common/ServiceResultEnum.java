@@ -49,7 +49,13 @@ public enum ServiceResultEnum {
 
     OPERATE_ERROR("操作失败！"),
 
-    DB_ERROR("database error");
+    DB_ERROR("database error"),
+
+    USER_ERROR("用户信息错误"),
+
+    ORDER_PERMISSIONS_ERROR("此订单不属于该用户,无法查看"),
+
+    ORDER_CANCEL_STATUS_ERROR("订单取消状态错误");
 
     private String result;
 

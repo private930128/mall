@@ -16,6 +16,7 @@ public class SmsProperties {
     private String host;
     private String sign;
     private String appkey;
+    private String key;
     private Integer templateId;
 
     public String requestParam(String mobile, String code) {
@@ -25,7 +26,7 @@ public class SmsProperties {
         buffer.append("appkey=").append(appkey).append("&");
         buffer.append("templateId=").append(templateId);
         try {
-            String encryptBase64 = AesUtils.encryptBase64(buffer.toString(), appkey);
+            String encryptBase64 = AesUtils.encryptBase64(buffer.toString(), key);
             return encryptBase64;
         } catch (Exception e) {
             e.printStackTrace();

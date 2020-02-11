@@ -4,6 +4,7 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 import ltd.newbee.mall.config.feign.FeignConfig;
+import ltd.newbee.mall.controller.vo.SmsResultVO;
 import org.springframework.cloud.openfeign.FeignClient;
 
 import java.util.Map;
@@ -14,5 +15,5 @@ public interface SmsApiService {
 
     @RequestLine("GET /sms/send?param={param}")
     @Headers({"Content-Type: application/x-www-form-urlencoded"})
-    String sendMessage(@Param("param") String param);
+    SmsResultVO sendMessage(@Param("param") String param);
 }

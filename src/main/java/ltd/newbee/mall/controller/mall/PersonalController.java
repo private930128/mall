@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
+import ltd.newbee.mall.controller.vo.SmsResultVO;
 import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.properties.SmsProperties;
 import ltd.newbee.mall.service.NewBeeMallUserService;
@@ -135,8 +136,9 @@ public class PersonalController {
     private SmsProperties smsProperties;
     @GetMapping(value = "test")
     @ApiOperation(value = "测试短信", notes = "测试短信")
+    @ResponseBody
     public String test() {
-        String msg =  this.smsApiService.sendMessage(this.smsProperties.requestParam("18611936357","123456"));
-        return msg;
+        SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam("18611936357", "123456"));
+        return smsResultVO.toString();
     }
 }

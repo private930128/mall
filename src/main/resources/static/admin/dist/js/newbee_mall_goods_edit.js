@@ -44,7 +44,7 @@ $('#confirmButton').click(function () {
     var goodsName = $('#goodsName').val();
     var tag = $('#tag').val();
     var originalPrice = $('#originalPrice').val();
-    var sellingPrice = $('#sellingPrice').val();
+    // var sellingPrice = $('#sellingPrice').val();
     var stockNum = $('#stockNum').val();
     var goodsIntro = $('#goodsIntro').val();
     var goodsCategoryId = $('#levelThree option:selected').val();
@@ -98,13 +98,13 @@ $('#confirmButton').click(function () {
         });
         return;
     }
-    if (isNull(sellingPrice) || sellingPrice < 1) {
-        swal("请输入商品售卖价", {
-            icon: "error",
-        });
-        return;
-    }
-    if (isNull(stockNum) || sellingPrice < 0) {
+    // if (isNull(sellingPrice) || sellingPrice < 1) {
+    //     swal("请输入商品售卖价", {
+    //         icon: "error",
+    //     });
+    //     return;
+    // }
+    if (isNull(stockNum) || stockNum < 0) {
         swal("请输入商品库存数", {
             icon: "error",
         });

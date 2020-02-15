@@ -19,8 +19,6 @@ public class AppGoodsInfoDto {
 
     private String goodsCoverImg;
 
-    private Integer originalPrice;
-
     private Integer sellingPrice;
 
     private String tag;
@@ -63,14 +61,6 @@ public class AppGoodsInfoDto {
 
     public void setGoodsCoverImg(String goodsCoverImg) {
         this.goodsCoverImg = goodsCoverImg;
-    }
-
-    public Integer getOriginalPrice() {
-        return originalPrice;
-    }
-
-    public void setOriginalPrice(Integer originalPrice) {
-        this.originalPrice = originalPrice;
     }
 
     public Integer getSellingPrice() {

@@ -368,4 +368,35 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP}
         where goods_id = #{goodsId,jdbcType=BIGINT}
     </update>
+
+    <!-- 前台查询商品信息接口 -->
+    <select id="queryGoods" parameterType="ltd.newbee.mall.app.dto.AppGoodsQueryDto" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from tb_newbee_mall_goods_info
+        where goods_sell_status = 1
+        <if test="goodsId!=null">
+            and goods_id = #{goodsId}
+        </if>
+        <if test="categoryId!=null">
+            and goods_category_id = #{categoryId}
+        </if>
+        order by goods_id desc
+        <if test="pageStartNum!=null and pageSize!=null">
+            limit #{pageStartNum},#{pageSize}
+        </if>
+    </select>
+
+    <!-- 前台根据id查询商品信息接口 -->
+    <select id="selectById" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from tb_newbee_mall_goods_info
+        where goods_id = #{goodsId}
+        and goods_sell_status = 1
+    </select>
 </mapper>

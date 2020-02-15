@@ -1,5 +1,6 @@
 package ltd.newbee.mall.dao;
 
+import ltd.newbee.mall.app.dto.AppGoodsQueryDto;
 import ltd.newbee.mall.entity.NewBeeMallGoods;
 import ltd.newbee.mall.entity.StockNumDTO;
 import ltd.newbee.mall.util.PageQueryUtil;
@@ -37,5 +38,9 @@ public interface NewBeeMallGoodsMapper {
     int updateStockNum(@Param("stockNumDTOS") List<StockNumDTO> stockNumDTOS);
 
     int batchUpdateSellStatus(@Param("orderIds") Long[] orderIds, @Param("sellStatus") int sellStatus);
+
+    List<NewBeeMallGoods> queryGoods(AppGoodsQueryDto queryDto);
+
+    NewBeeMallGoods selectById(@Param("goodsId") Long goodsId);
 
 }

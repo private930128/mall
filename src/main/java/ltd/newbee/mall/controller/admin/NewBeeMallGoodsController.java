@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author 13
@@ -40,6 +37,13 @@ public class NewBeeMallGoodsController {
     @GetMapping("/goods")
     public String goodsPage(HttpServletRequest request) {
         request.setAttribute("path", "newbee_mall_goods");
+
+        //查询商品数据
+        Map<String, Object> params = new HashMap();
+        params.put("page", 1);
+        params.put("limit", 10);
+        PageQueryUtil pageUtil = new PageQueryUtil(params);
+        request.setAttribute("pageResult", newBeeMallGoodsService.searchNewBeeMallGoods(pageUtil));
         return "admin/newbee_mall_goods";
     }
 

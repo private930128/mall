@@ -376,7 +376,7 @@
         ,
         <include refid="Blob_Column_List"/>
         from tb_newbee_mall_goods_info
-        where goods_sell_status = 1
+        where goods_sell_status = 0
         <if test="goodsId!=null">
             and goods_id = #{goodsId}
         </if>
@@ -397,6 +397,6 @@
         <include refid="Blob_Column_List"/>
         from tb_newbee_mall_goods_info
         where goods_id = #{goodsId}
-        and goods_sell_status = 1
+        and goods_sell_status = 0
     </select>
 </mapper>

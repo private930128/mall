@@ -108,7 +108,7 @@ function putUpGoods() {
         icon: "warning",
         buttons: true,
         dangerMode: true,
-    }).then((flag) = > {
+    }).then((flag) => {
         if (flag) {
             $.ajax({
                 type: "PUT",
@@ -148,7 +148,7 @@ function putDownGoods() {
         icon: "warning",
         buttons: true,
         dangerMode: true,
-    }).then((flag) = > {
+    }).then((flag) => {
         if (flag) {
             $.ajax({
                 type: "PUT",

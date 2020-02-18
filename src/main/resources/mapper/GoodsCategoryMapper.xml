@@ -209,4 +209,11 @@
         update_user = #{updateUser,jdbcType=INTEGER}
         where category_id = #{categoryId,jdbcType=BIGINT}
     </update>
+
+    <select id="listCategoryInfo" parameterType="Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_newbee_mall_goods_category
+        where is_deleted = 0
+    </select>
 </mapper>

@@ -11,6 +11,7 @@ import ltd.newbee.mall.properties.SmsProperties;
 import ltd.newbee.mall.service.NewBeeMallUserService;
 import ltd.newbee.mall.service.fegin.SmsApiService;
 import ltd.newbee.mall.util.MD5Util;
+import ltd.newbee.mall.util.NumberUtil;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +140,7 @@ public class PersonalController {
     @ResponseBody
     public String test(String phone) {
         //TODO 1.防刷 2.记录请求成功与否 3.校验验证码 4.添加渠道
-        SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam(phone, "123456"));
+        SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam(phone, String.valueOf(NumberUtil.genRandomNum(6))));
         return smsResultVO.toString();
     }
 }

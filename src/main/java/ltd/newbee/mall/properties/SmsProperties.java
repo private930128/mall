@@ -13,7 +13,6 @@ import java.util.Map;
 @Data
 public class SmsProperties {
 
-    private String host;
     private String sign;
     private String appkey;
     private String key;

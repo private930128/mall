@@ -36,4 +36,50 @@ public class Constants {
     public final static int SELL_STATUS_UP = 0;//商品上架状态
     public final static int SELL_STATUS_DOWN = 1;//商品下架状态
 
+    /**
+     * 分隔符
+     */
+    public static final String SPLIT_D = ",";
+
+    /**
+     * 分隔符
+     */
+    public static final String SPLIT_S = "|";
+
+    /**
+     * 分隔符
+     */
+    public static final String SPLIT_M = ":";
+
+    /**
+     * -
+     */
+    public static final String NULL_FLAG = "-";
+
+    /**
+     * log_id
+     */
+    public static final String MDC_LOG_ID = "MDC_LOG_ID";
+
+    /**
+     * req_ip
+     */
+    public static final String MDC_REQ_IP = "MDC_REQ_IP";
+
+    /**
+     * req_userId
+     */
+    public static final String MDC_USER_ID = "MDC_USER_ID";
+
+    /**
+     * userId
+     */
+    public static final String USER_ID = "userId";
+
+    /**
+     * null
+     */
+    public static final String NULL = "null";
+
+
 }

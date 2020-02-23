@@ -36,7 +36,7 @@ public class AppMsgController {
     @ApiOperation(value = "短信发送接口")
     @PostMapping("sendMsg")
     public Result sendMsg(@RequestBody AppMsgDto appMsgDto) {
-        //TODO 1.校验手机号正确性 2.
+        //TODO 1.前后端加密验证签名。 2.请求前后添加日志。 完成 3.请求对象统一校验
         //TODO 1.防刷 2.记录请求成功与否 3.校验验证码 4.添加渠道
         String verCode = String.valueOf(NumberUtil.genRandomNum(LENGTH));
         SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam(appMsgDto.getPhone(), verCode));

@@ -4,6 +4,7 @@ import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.interceptor.AdminLoginInterceptor;
 import ltd.newbee.mall.interceptor.NewBeeMallCartNumberInterceptor;
 import ltd.newbee.mall.interceptor.NewBeeMallLoginInterceptor;
+import ltd.newbee.mall.interceptor.SecurityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,7 +20,8 @@ public class NeeBeeMallWebMvcConfigurer implements WebMvcConfigurer {
     private NewBeeMallLoginInterceptor newBeeMallLoginInterceptor;
     @Autowired
     private NewBeeMallCartNumberInterceptor newBeeMallCartNumberInterceptor;
-
+    @Autowired
+    private SecurityInterceptor securityInterceptor;
     public void addInterceptors(InterceptorRegistry registry) {
         // 添加一个拦截器，拦截以/admin为前缀的url路径（后台登陆拦截）
         registry.addInterceptor(adminLoginInterceptor)
@@ -49,6 +51,9 @@ public class NeeBeeMallWebMvcConfigurer implements WebMvcConfigurer {
                 .addPathPatterns("/personal/updateInfo")
                 .addPathPatterns("/selectPayType")
                 .addPathPatterns("/payPage");
+
+        registry.addInterceptor(securityInterceptor)
+                .addPathPatterns("/app/msg/sendMsg");
     }
 
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

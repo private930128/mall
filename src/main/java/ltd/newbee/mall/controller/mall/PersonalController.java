@@ -131,16 +131,4 @@ public class PersonalController {
         }
     }
 
-    @Autowired
-    private SmsApiService smsApiService;
-    @Autowired
-    private SmsProperties smsProperties;
-    @GetMapping(value = "test")
-    @ApiOperation(value = "测试短信", notes = "测试短信")
-    @ResponseBody
-    public String test(String phone) {
-        //TODO 1.防刷 2.记录请求成功与否 3.校验验证码 4.添加渠道
-        SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam(phone, String.valueOf(NumberUtil.genRandomNum(6))));
-        return smsResultVO.toString();
-    }
 }

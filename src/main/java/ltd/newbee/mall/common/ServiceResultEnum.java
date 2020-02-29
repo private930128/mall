@@ -55,7 +55,12 @@ public enum ServiceResultEnum {
 
     ORDER_PERMISSIONS_ERROR("此订单不属于该用户,无法查看"),
 
+    ORDER_IS_PAYED("订单已经支付了，请勿重复支付"),
+    INSRT_PAYMENT_JOURNAL_ERROR("插入支付流水失败"),
+    UPDATE_PAYMENT_JOURNAL_ERROR("更新支付流水失败"),
+
     ORDER_CANCEL_STATUS_ERROR("订单取消状态错误");
+
 
     private String result;
 

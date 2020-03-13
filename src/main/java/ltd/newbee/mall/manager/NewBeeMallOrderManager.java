@@ -1,5 +1,6 @@
 package ltd.newbee.mall.manager;
 
+import ltd.newbee.mall.common.PayStatusEnum;
 import ltd.newbee.mall.controller.vo.NewBeeMallOrderDetailVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallShoppingCartItemVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
@@ -18,4 +19,6 @@ public interface NewBeeMallOrderManager {
     PageResult getMyOrders(PageQueryUtil pageUtil);
 
     String cancelOrder(String orderNo, Long userId);
+
+    boolean completeOrderPayment(String orderNo, PayStatusEnum payStatusEnum);
 }

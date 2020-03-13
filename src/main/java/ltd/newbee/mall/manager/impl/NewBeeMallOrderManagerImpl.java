@@ -1,9 +1,6 @@
 package ltd.newbee.mall.manager.impl;
 
-import ltd.newbee.mall.common.NewBeeMallException;
-import ltd.newbee.mall.common.NewBeeMallOrderStatusEnum;
-import ltd.newbee.mall.common.PayTypeEnum;
-import ltd.newbee.mall.common.ServiceResultEnum;
+import ltd.newbee.mall.common.*;
 import ltd.newbee.mall.controller.vo.*;
 import ltd.newbee.mall.dao.NewBeeMallGoodsMapper;
 import ltd.newbee.mall.dao.NewBeeMallOrderItemMapper;
@@ -162,5 +159,10 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             }
         }
         return ServiceResultEnum.ORDER_NOT_EXIST_ERROR.getResult();
+    }
+
+    @Override
+    public boolean completeOrderPayment(String orderNo, PayStatusEnum payStatusEnum) {
+        return false;
     }
 }

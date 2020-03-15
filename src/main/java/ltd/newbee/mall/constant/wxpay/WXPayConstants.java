@@ -24,5 +24,7 @@ public class WXPayConstants {
     public static final String FIELD_SIGN_TYPE = "sign_type";
 
     public static final String JSAPI="JSAPI";
+
+    public static final String PLATFORM_ENV_DEV = "";
 }
 

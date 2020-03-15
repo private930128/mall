@@ -1,8 +1,11 @@
 package ltd.newbee.mall.service;
 
 
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import ltd.newbee.mall.common.NewBeeMallException;
 import ltd.newbee.mall.entity.PaymentJournal;
+import ltd.newbee.mall.util.wxpay.PayUtil;
 
 public interface PaymentService {
 
@@ -58,4 +61,7 @@ public interface PaymentService {
 
     PaymentJournal buildRefundPaymentJournal(PaymentJournal paymentJournal)
             throws NewBeeMallException;
+
+
+    Map<String, Object> paywxr(HttpServletRequest request,String orderNo);
 }

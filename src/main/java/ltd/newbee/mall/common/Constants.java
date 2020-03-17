@@ -81,5 +81,11 @@ public class Constants {
      */
     public static final String NULL = "null";
 
+    /**
+     *
+     */
+    public static final String PLATFORM_COMPANY_NAME = "易购物-购买商品";
+
+    public static final String WX_NOTIFY_URL = "notify";
 
 }

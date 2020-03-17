@@ -293,4 +293,38 @@
         update_time = #{updateTime,jdbcType=TIMESTAMP}
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
+
+    <select id="findNewBeeMallOrderListByExport" parameterType="Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_newbee_mall_order
+        <where>
+            <if test="orderNo!=null and orderNo!=''">
+                and order_no = #{orderNo}
+            </if>
+            <if test="userId!=null and userId!=''">
+                and user_id = #{userId}
+            </if>
+            <if test="payType!=null and payType!=''">
+                and pay_type = #{payType}
+            </if>
+            <if test="orderStatus!=null and orderStatus!=''">
+                and order_status = #{orderStatus}
+            </if>
+            <if test="isDeleted!=null and isDeleted!=''">
+                and is_deleted = #{isDeleted}
+            </if>
+            <if test="startTime != null and startTime.trim() != ''">
+                and create_time &gt; #{startTime}
+            </if>
+            <if test="endTime != null and endTime.trim() != ''">
+                and create_time &lt; #{endTime}
+            </if>
+            <if test="channelId != null">
+                and channel_id = #{channelId}
+            </if>
+        </where>
+        order by create_time desc
+
+    </select>
 </mapper>

@@ -165,4 +165,33 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     public boolean completeOrderPayment(String orderNo, PayStatusEnum payStatusEnum) {
         return false;
     }
+
+    @Override
+    public List<NewBeeMallOrderListVO> getOrdersByExport(PageQueryUtil pageUtil) {
+
+        List<NewBeeMallOrder> newBeeMallOrders = newBeeMallOrderMapper.findNewBeeMallOrderListByExport(pageUtil);
+        List<NewBeeMallOrderListVO> orderListVOS = new ArrayList<>();
+        //数据转换 将实体类转成vo
+        orderListVOS = BeanUtil.copyList(newBeeMallOrders, NewBeeMallOrderListVO.class);
+        //设置订单状态中文显示值
+        for (NewBeeMallOrderListVO newBeeMallOrderListVO : orderListVOS) {
+            newBeeMallOrderListVO.setOrderStatusString(NewBeeMallOrderStatusEnum.getNewBeeMallOrderStatusEnumByStatus(newBeeMallOrderListVO.getOrderStatus()).getName());
+        }
+        List<Long> orderIds = newBeeMallOrders.stream().map(NewBeeMallOrder::getOrderId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(orderIds)) {
+            List<NewBeeMallOrderItem> orderItems = newBeeMallOrderItemMapper.selectByOrderIds(orderIds);
+            Map<Long, List<NewBeeMallOrderItem>> itemByOrderIdMap = orderItems.stream().collect(groupingBy(NewBeeMallOrderItem::getOrderId));
+            for (NewBeeMallOrderListVO newBeeMallOrderListVO : orderListVOS) {
+                //封装每个订单列表对象的订单项数据
+                if (itemByOrderIdMap.containsKey(newBeeMallOrderListVO.getOrderId())) {
+                    List<NewBeeMallOrderItem> orderItemListTemp = itemByOrderIdMap.get(newBeeMallOrderListVO.getOrderId());
+                    //将NewBeeMallOrderItem对象列表转换成NewBeeMallOrderItemVO对象列表
+                    List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = BeanUtil.copyList(orderItemListTemp, NewBeeMallOrderItemVO.class);
+                    newBeeMallOrderListVO.setNewBeeMallOrderItemVOS(newBeeMallOrderItemVOS);
+                }
+            }
+        }
+
+        return orderListVOS;
+    }
 }

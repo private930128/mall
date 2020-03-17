@@ -22,7 +22,6 @@ public interface NewBeeMallOrderMapper {
     int updateByPrimaryKey(NewBeeMallOrder record);
 
     List<NewBeeMallOrder> findNewBeeMallOrderList(PageQueryUtil pageUtil);
-
     int getTotalNewBeeMallOrders(PageQueryUtil pageUtil);
 
     List<NewBeeMallOrder> selectByPrimaryKeys(@Param("orderIds") List<Long> orderIds);
@@ -32,4 +31,6 @@ public interface NewBeeMallOrderMapper {
     int closeOrder(@Param("orderIds") List<Long> orderIds, @Param("orderStatus") int orderStatus);
 
     int checkDone(@Param("orderIds") List<Long> asList);
+
+    List<NewBeeMallOrder> findNewBeeMallOrderListByExport(PageQueryUtil pageUtil);
 }

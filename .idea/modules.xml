@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/mallA.iml" filepath="$PROJECT_DIR$/.idea/mallA.iml" />
       <module fileurl="file://$PROJECT_DIR$/newbee-mall.iml" filepath="$PROJECT_DIR$/newbee-mall.iml" />
     </modules>
   </component>

@@ -1,18 +1,12 @@
 package ltd.newbee.mall.app.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
-import ltd.newbee.mall.config.redis.RedisUtil;
-import ltd.newbee.mall.controller.vo.SmsResultVO;
 import ltd.newbee.mall.entity.MallUser;
-import ltd.newbee.mall.properties.SmsProperties;
-import ltd.newbee.mall.service.fegin.SmsApiService;
-import ltd.newbee.mall.util.NumberUtil;
+import ltd.newbee.mall.service.WechatService;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,11 +20,16 @@ import org.springframework.web.bind.annotation.*;
 public class AppUserController {
 
     @Autowired
-    private RedisUtil redisUtil;
+    private WechatService wechatService;
 
     @ApiOperation(value = "用户登录接口")
     @PostMapping("login")
     public Result login(@RequestBody MallUser user) {
-        return ResultGenerator.genSuccessResult();
+        try {
+            return ResultGenerator.genSuccessResult(this.wechatService.wechatLogin(user));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.genFailResult("微信登录失败");
+        }
     }
 }

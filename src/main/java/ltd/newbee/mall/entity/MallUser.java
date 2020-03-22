@@ -21,6 +21,9 @@ public class MallUser {
 
     private Byte lockedFlag;
 
+    private String code;
+
+    private String wechatOpenid;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
@@ -113,5 +116,21 @@ public class MallUser {
         sb.append(", createTime=").append(createTime);
         sb.append("]");
         return sb.toString();
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getWechatOpenid() {
+        return wechatOpenid;
+    }
+
+    public void setWechatOpenid(String wechatOpenid) {
+        this.wechatOpenid = wechatOpenid;
     }
 }

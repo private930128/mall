@@ -11,10 +11,11 @@
         <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
         <result column="locked_flag" jdbcType="TINYINT" property="lockedFlag"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="wechat_openid" jdbcType="VARCHAR" property="wechatOpenid"/>
     </resultMap>
     <sql id="Base_Column_List">
     user_id, nick_name, login_name, password_md5, introduce_sign, address, is_deleted, 
-    locked_flag, create_time
+    locked_flag, create_time, wechat_openid
   </sql>
 
     <select id="findMallUserList" parameterType="Map" resultMap="BaseResultMap">
@@ -64,12 +65,12 @@
     <insert id="insert" parameterType="ltd.newbee.mall.entity.MallUser">
     insert into tb_newbee_mall_user (user_id, nick_name, login_name, 
       password_md5, introduce_sign, address, 
-      is_deleted, locked_flag, create_time
+      is_deleted, locked_flag, create_time,wechat_openid
       )
     values (#{userId,jdbcType=BIGINT}, #{nickName,jdbcType=VARCHAR}, #{loginName,jdbcType=VARCHAR}, 
       #{passwordMd5,jdbcType=VARCHAR}, #{introduceSign,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{isDeleted,jdbcType=TINYINT}, #{lockedFlag,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}
-      )
+      #{isDeleted,jdbcType=TINYINT}, #{lockedFlag,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP},
+      #{wechatOpenid,jdbcType=VARCHAR} )
   </insert>
     <insert id="insertSelective" parameterType="ltd.newbee.mall.entity.MallUser">
         insert into tb_newbee_mall_user
@@ -101,6 +102,9 @@
             <if test="createTime != null">
                 create_time,
             </if>
+            <if test="wechatOpenid != null">
+                wechat_openid,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -129,6 +133,9 @@
             </if>
             <if test="createTime != null">
                 #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="wechatOpenid != null">
+                #{wechatOpenid,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -159,6 +166,9 @@
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="wechatOpenid != null">
+                wechat_openid = #{wechatOpenid,jdbcType=VARCHAR},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=BIGINT}
     </update>
@@ -171,7 +181,8 @@
       address = #{address,jdbcType=VARCHAR},
       is_deleted = #{isDeleted,jdbcType=TINYINT},
       locked_flag = #{lockedFlag,jdbcType=TINYINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      wechat_openid = #{wechatOpenid,jdbcType=VARCHAR},
     where user_id = #{userId,jdbcType=BIGINT}
   </update>
     <update id="lockUserBatch">

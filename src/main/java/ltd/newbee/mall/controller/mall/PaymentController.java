@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Resource;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import ltd.newbee.mall.common.PaymentStatusEnum;
 import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.config.wxpay.WxPayConfig;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
+import ltd.newbee.mall.entity.NewBeeMallOrder;
 import ltd.newbee.mall.entity.PaymentJournal;
 import ltd.newbee.mall.service.NewBeeMallOrderService;
 import ltd.newbee.mall.service.PaymentService;
@@ -118,21 +118,24 @@ public class PaymentController {
     }
 
     /**
-     * @Description: 发起微信支付
-     * @param openid
+     *
      * @param request
+     * @param orderNo
+     * @param httpSession
+     * @return
      */
-    @RequestMapping("wxrPay")
+    @PostMapping("wxrPay")
     @ResponseBody
     public Map<String, Object> wxrPay(HttpServletRequest request, String orderNo, HttpSession httpSession) {
         Map<String, Object> map = new HashMap<>();
-        NewBeeMallUserVO user = (NewBeeMallUserVO) httpSession.getAttribute(Constants.MALL_USER_SESSION_KEY);
+//        NewBeeMallUserVO user = (NewBeeMallUserVO) httpSession.getAttribute(Constants.MALL_USER_SESSION_KEY);
+        NewBeeMallUserVO user = new NewBeeMallUserVO();
+        user.setUserId(10L);
         String finishOrderResult = newBeeMallOrderService.finishOrder(orderNo, user.getUserId());
-        if (ServiceResultEnum.SUCCESS.getResult().equals(finishOrderResult)) {
+        NewBeeMallOrder order = newBeeMallOrderService.getNewBeeMallOrderByOrderNo(orderNo);
+        if (PayStatusEnum.PAY_SUCCESS.getPayStatus() == order.getPayStatus()) {
             map.put("400", "订单已支付，请不要重复操作");
-        } else if(ServiceResultEnum.ORDER_NOT_EXIST_ERROR.getResult().equals(finishOrderResult)){
-            map.put("400", ServiceResultEnum.ORDER_NOT_EXIST_ERROR.getResult());
-        } else if(ServiceResultEnum.DB_ERROR.getResult().equals(finishOrderResult)){
+        } else if(order == null){
             map.put("400", ServiceResultEnum.ORDER_NOT_EXIST_ERROR.getResult());
         } else {
             map = paymentService.paywxr(request, orderNo);
@@ -145,7 +148,7 @@ public class PaymentController {
      * @return
      * @throws Exception
      */
-    @RequestMapping("wxNotify")
+    @PostMapping("wxNotify")
     @ResponseBody
     public void wxNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
         log.info("进入回调");
@@ -170,13 +173,13 @@ public class PaymentController {
             // 验证签名是否正确
             Map<String, String> validParams = PayUtil.paraFilter(map); // 回调验签时需要去除sign和空值参数
             String validStr = PayUtil.createLinkString(validParams);// 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-            String sign = PayUtil.sign(validStr, WxPayConfig.key, "utf-8").toUpperCase();// 拼装生成服务器端验证的签名
+            String sign = PayUtil.sign(validStr, WxPayConfig.KEY, "utf-8").toUpperCase();// 拼装生成服务器端验证的签名
             // 根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
             if (sign.equals(map.get("sign"))) {
                 String orderNumber = (String) map.get("out_trade_no");// 订单号
                 String amount = (String) map.get("total_fee");// 价格
                 Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的分
-//                paymentService.updatePaymentJournalMoney();
+                paymentService.payResult(orderNumber, 1, totalPrice);
                 // 通知微信服务器已经支付成功
                 resXml =
                         "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"

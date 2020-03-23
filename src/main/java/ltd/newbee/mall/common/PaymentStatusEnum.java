@@ -3,7 +3,7 @@ package ltd.newbee.mall.common;
 public enum PaymentStatusEnum {
 
     CREATE_ORDER(0, "创建(待支付)"), WAIT_PAY(1, "唤起收银台"), PAY(2, "支付成功"), WAIT_REFUND(3, "待退款"), REFUND(
-            4, "已退款"), ;
+            4, "已退款"), PAY_FAIL(-1, "支付失败");
 
     private String message;
     private int index;

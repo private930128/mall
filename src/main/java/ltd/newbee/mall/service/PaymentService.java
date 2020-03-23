@@ -23,9 +23,11 @@ public interface PaymentService {
      * @return
      * @throws NewBeeMallException
      */
-    public PaymentJournal buildPaymentJournal(Long userId, String nickName, String payAppId,
+    PaymentJournal buildPaymentJournal(Long userId, String nickName, String payAppId,
             String payCode, String merchantId, String merchantOrderNo, String desc,
             Integer payAmount) throws NewBeeMallException;
+
+    PaymentJournal savePayLog(String merchantOrderNo, Integer payStatus, Integer payAmount);
 
     /**
      * 更新支付流水的金额
@@ -64,4 +66,6 @@ public interface PaymentService {
 
 
     Map<String, Object> paywxr(HttpServletRequest request,String orderNo);
+
+    void payResult(String merchantOrderNo, Integer payStatus, Integer payAmount);
 }

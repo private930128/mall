@@ -41,6 +41,6 @@ public class AppMsgController {
         String verCode = String.valueOf(NumberUtil.genRandomNum(LENGTH));
         SmsResultVO smsResultVO = this.smsApiService.sendMessage(this.smsProperties.requestParam(appMsgDto.getPhone(), verCode));
         redisUtil.set(appMsgDto.getPhone(), verCode, TIME);
-        return ResultGenerator.genSuccessResult(smsResultVO);
+        return ResultGenerator.genSuccessDateResult(smsResultVO);
     }
 }

@@ -68,7 +68,7 @@ public class PaymentControllerbak {
                     resMap.remove("returnCode");
                     resMap.remove("returnMsg");
                     logger.info("【小程序支付服务】支付下单成功！");
-                    return ResultGenerator.genSuccessResult(resMap);
+                    return ResultGenerator.genSuccessDateResult(resMap);
                 } else {
                     logger.info("【小程序支付服务】支付下单失败！原因:" + resMap.get("returnMsg"));
                     return ResultGenerator.genFailResult(resMap.get("returnMsg"));

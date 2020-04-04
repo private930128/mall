@@ -18,10 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -42,8 +40,12 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     @Override
     public String createOrder(NewBeeMallUserVO user, List<NewBeeMallShoppingCartItemVO> myShoppingCartItems) {
         List<Long> goodsIds = myShoppingCartItems.stream().map(NewBeeMallShoppingCartItemVO::getGoodsId).collect(Collectors.toList());
-        List<NewBeeMallGoods> newBeeMallGoods = newBeeMallGoodsMapper.selectByPrimaryKeys(goodsIds);
 
+        List<NewBeeMallGoods> newBeeMallGoods = newBeeMallGoodsMapper.selectByPrimaryKeys(goodsIds);
+        Map<Long, NewBeeMallGoods> goodsMap = new HashMap<>();
+        for (NewBeeMallGoods goods : newBeeMallGoods) {
+            goodsMap.put(goods.getGoodsId(), goods);
+        }
         if (!CollectionUtils.isEmpty(newBeeMallGoods)) {
             //生成订单号
             String orderNo = NumberUtil.genOrderNo();
@@ -55,7 +57,8 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             newBeeMallOrder.setUserAddress(user.getAddress());
             //总价
             for (NewBeeMallShoppingCartItemVO newBeeMallShoppingCartItemVO : myShoppingCartItems) {
-                priceTotal += newBeeMallShoppingCartItemVO.getGoodsCount() * newBeeMallShoppingCartItemVO.getSellingPrice();
+                Integer price = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getSellingPrice();
+                priceTotal += newBeeMallShoppingCartItemVO.getGoodsCount() * price;
             }
             if (priceTotal < 1) {
                 NewBeeMallException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
@@ -74,7 +77,12 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             for (NewBeeMallShoppingCartItemVO newBeeMallShoppingCartItemVO : myShoppingCartItems) {
                 NewBeeMallOrderItem newBeeMallOrderItem = new NewBeeMallOrderItem();
                 BeanUtil.copyProperties(newBeeMallShoppingCartItemVO, newBeeMallOrderItem);
+                Integer price = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getSellingPrice();
+                String goodName = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getGoodsName();
+                newBeeMallOrderItem.setSellingPrice(price);
                 newBeeMallOrderItem.setOrderId(orderId);
+                newBeeMallOrderItem.setGoodsName(goodName);
+                newBeeMallOrderItem.setGoodsCoverImg(goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getGoodsCoverImg());
                 newBeeMallOrderItems.add(newBeeMallOrderItem);
             }
             //保存至数据库

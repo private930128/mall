@@ -50,7 +50,7 @@ public class NewBeeMallOrderController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallOrderService.getNewBeeMallOrdersPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallOrderService.getNewBeeMallOrdersPage(pageUtil));
     }
 
     /**
@@ -82,7 +82,7 @@ public class NewBeeMallOrderController {
     public Result info(@PathVariable("id") Long id) {
         List<NewBeeMallOrderItemVO> orderItems = newBeeMallOrderService.getOrderItems(id);
         if (!CollectionUtils.isEmpty(orderItems)) {
-            return ResultGenerator.genSuccessResult(orderItems);
+            return ResultGenerator.genSuccessDateResult(orderItems);
         }
         return ResultGenerator.genFailResult(ServiceResultEnum.DATA_NOT_EXIST.getResult());
     }

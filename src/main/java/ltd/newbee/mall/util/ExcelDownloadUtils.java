@@ -66,7 +66,7 @@ public class ExcelDownloadUtils {
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
-            params.put("startTime", calendar.getTime());
+//            params.put("startTime", calendar.getTime());
 //            params.put("channelId",1);
             PageQueryUtil pageQueryUtil = new PageQueryUtil(params);
             List<NewBeeMallOrderListVO> list = mallOrderManager.getOrdersByExport(pageQueryUtil);

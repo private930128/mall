@@ -23,6 +23,6 @@ public class AppConfigController {
     @RequestMapping(value = "/getCategoryConfig", method = RequestMethod.GET)
     @ResponseBody
     public Result getCategoryConfig() {
-        return ResultGenerator.genSuccessResult(newBeeMallConfigManager.listCategoryConfig());
+        return ResultGenerator.genSuccessDateResult(newBeeMallConfigManager.listCategoryConfig());
     }
 }

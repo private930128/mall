@@ -53,7 +53,7 @@ public class NewBeeMallGoodsIndexConfigController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallIndexConfigService.getConfigsPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallIndexConfigService.getConfigsPage(pageUtil));
     }
 
     /**
@@ -106,7 +106,7 @@ public class NewBeeMallGoodsIndexConfigController {
         if (config == null) {
             return ResultGenerator.genFailResult("未查询到数据");
         }
-        return ResultGenerator.genSuccessResult(config);
+        return ResultGenerator.genSuccessDateResult(config);
     }
 
     /**

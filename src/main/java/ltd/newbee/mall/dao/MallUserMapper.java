@@ -28,4 +28,6 @@ public interface MallUserMapper {
     int getTotalMallUsers(PageQueryUtil pageUtil);
 
     int lockUserBatch(@Param("ids") Integer[] ids, @Param("lockStatus") int lockStatus);
+
+    MallUser selectByOpenId(@Param("openId") String openId);
 }

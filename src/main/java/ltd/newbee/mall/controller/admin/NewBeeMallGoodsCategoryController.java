@@ -51,7 +51,7 @@ public class NewBeeMallGoodsCategoryController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallCategoryService.getCategorisPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallCategoryService.getCategorisPage(pageUtil));
     }
 
     /**
@@ -85,7 +85,7 @@ public class NewBeeMallGoodsCategoryController {
             List<GoodsCategory> thirdLevelCategories = newBeeMallCategoryService.selectByLevelAndParentIdsAndNumber(Collections.singletonList(categoryId), NewBeeMallCategoryLevelEnum.LEVEL_THREE.getLevel());
             categoryResult.put("thirdLevelCategories", thirdLevelCategories);
         }
-        return ResultGenerator.genSuccessResult(categoryResult);
+        return ResultGenerator.genSuccessDateResult(categoryResult);
     }
 
     /**
@@ -140,7 +140,7 @@ public class NewBeeMallGoodsCategoryController {
         if (goodsCategory == null) {
             return ResultGenerator.genFailResult("未查询到数据");
         }
-        return ResultGenerator.genSuccessResult(goodsCategory);
+        return ResultGenerator.genSuccessDateResult(goodsCategory);
     }
 
     /**

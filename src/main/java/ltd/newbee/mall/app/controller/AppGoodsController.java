@@ -26,7 +26,7 @@ public class AppGoodsController {
     @RequestMapping(value = "/queryGoods", method = RequestMethod.GET)
     @ResponseBody
     public Result queryGoods(AppGoodsQueryDto queryDto) {
-        return ResultGenerator.genSuccessResult(newBeeMallGoodsManager.queryGoods(queryDto));
+        return ResultGenerator.genSuccessDateResult(newBeeMallGoodsManager.queryGoods(queryDto));
     }
 
     @RequestMapping(value = "/getGoodsInfoById", method = RequestMethod.GET)
@@ -35,6 +35,6 @@ public class AppGoodsController {
         if (goodsId == null) {
             return ResultGenerator.genErrorResult(400, "参数错误");
         }
-        return ResultGenerator.genSuccessResult(newBeeMallGoodsManager.queryGoodsById(goodsId));
+        return ResultGenerator.genSuccessDateResult(newBeeMallGoodsManager.queryGoodsById(goodsId));
     }
 }

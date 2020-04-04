@@ -192,4 +192,11 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="selectByOpenId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_newbee_mall_user
+        where wechat_openid = #{openId}
+    </select>
 </mapper>

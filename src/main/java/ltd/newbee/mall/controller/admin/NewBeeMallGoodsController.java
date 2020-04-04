@@ -128,7 +128,7 @@ public class NewBeeMallGoodsController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallGoodsService.getNewBeeMallGoodsPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallGoodsService.getNewBeeMallGoodsPage(pageUtil));
     }
 
     /**
@@ -193,7 +193,7 @@ public class NewBeeMallGoodsController {
         if (goods == null) {
             return ResultGenerator.genFailResult(ServiceResultEnum.DATA_NOT_EXIST.getResult());
         }
-        return ResultGenerator.genSuccessResult(goods);
+        return ResultGenerator.genSuccessDateResult(goods);
     }
 
     /**

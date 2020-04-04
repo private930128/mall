@@ -41,7 +41,7 @@ public class NewBeeMallUserController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallUserService.getNewBeeMallUsersPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallUserService.getNewBeeMallUsersPage(pageUtil));
     }
 
     /**

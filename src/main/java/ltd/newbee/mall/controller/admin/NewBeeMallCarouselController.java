@@ -46,7 +46,7 @@ public class NewBeeMallCarouselController {
             return ResultGenerator.genFailResult("参数异常！");
         }
         PageQueryUtil pageUtil = new PageQueryUtil(params);
-        return ResultGenerator.genSuccessResult(newBeeMallCarouselService.getCarouselPage(pageUtil));
+        return ResultGenerator.genSuccessDateResult(newBeeMallCarouselService.getCarouselPage(pageUtil));
     }
 
     /**
@@ -97,7 +97,7 @@ public class NewBeeMallCarouselController {
         if (carousel == null) {
             return ResultGenerator.genFailResult(ServiceResultEnum.DATA_NOT_EXIST.getResult());
         }
-        return ResultGenerator.genSuccessResult(carousel);
+        return ResultGenerator.genSuccessDateResult(carousel);
     }
 
     /**

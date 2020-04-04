@@ -30,7 +30,7 @@ public class ResultGenerator {
         return result;
     }
 
-    public static Result genSuccessResult(Object data) {
+    public static Result genSuccessDateResult(Object data) {
         Result result = new Result();
         result.setResultCode(RESULT_CODE_SUCCESS);
         result.setMessage(DEFAULT_SUCCESS_MESSAGE);

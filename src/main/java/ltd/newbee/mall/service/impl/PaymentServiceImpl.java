@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import ltd.newbee.mall.app.dto.CreateOrderResultDto;
 import ltd.newbee.mall.common.NewBeeMallException;
 import ltd.newbee.mall.common.PayStatusEnum;
 import ltd.newbee.mall.common.PaymentStatusEnum;
@@ -195,7 +197,7 @@ public class PaymentServiceImpl implements PaymentService {
             String p = price1 + "";
             // 组装参数，用户生成统一下单接口的签名
             Map<String, String> packageParams = new HashMap<String, String>();
-            packageParams.put("appid", WxPayConfig.APPID);
+            packageParams.put("", WxPayConfig.APPID);
             packageParams.put("mch_id", WxPayConfig.MCH_ID);
             packageParams.put("nonce_str", nonce_str);
             packageParams.put("body", body);
@@ -293,6 +295,17 @@ public class PaymentServiceImpl implements PaymentService {
             mallOrderManager.completeOrderPayment(merchantOrderNo, PayStatusEnum.PAY_SUCCESS);
         }
         this.savePayLog(merchantOrderNo, payStatus, payAmount);
+    }
+
+    @Override
+    public CreateOrderResultDto assemblyCreateOrderResultDto() {
+        CreateOrderResultDto createOrderResultDto = new CreateOrderResultDto();
+        createOrderResultDto.setOrderNo("");
+        createOrderResultDto.setTimeStamp(String.valueOf(new Date().getTime()));
+        createOrderResultDto.setNonceStr(""); // 随机字符，长度32个字符一下
+        createOrderResultDto.setPackageStr("prepay_id=" + ""); // 统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=***
+        createOrderResultDto.setPaySign("");
+        return createOrderResultDto;
     }
 
 }

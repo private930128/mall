@@ -3,6 +3,8 @@ package ltd.newbee.mall.service;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
+import ltd.newbee.mall.app.dto.CreateOrderResultDto;
 import ltd.newbee.mall.common.NewBeeMallException;
 import ltd.newbee.mall.entity.PaymentJournal;
 import ltd.newbee.mall.util.wxpay.PayUtil;
@@ -68,4 +70,6 @@ public interface PaymentService {
     Map<String, Object> paywxr(HttpServletRequest request,String orderNo);
 
     void payResult(String merchantOrderNo, Integer payStatus, Integer payAmount);
+
+    CreateOrderResultDto assemblyCreateOrderResultDto();
 }

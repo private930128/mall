@@ -5,12 +5,14 @@ import com.alibaba.fastjson.JSON;
 import ltd.newbee.mall.app.constant.ResultMsgEnum;
 import ltd.newbee.mall.app.dto.CancelOrderRequest;
 import ltd.newbee.mall.app.dto.CreateOrderRequest;
+import ltd.newbee.mall.app.dto.CreateOrderResultDto;
 import ltd.newbee.mall.config.redis.RedisUtil;
 import ltd.newbee.mall.controller.vo.NewBeeMallShoppingCartItemVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
 import ltd.newbee.mall.dao.MallUserMapper;
 import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.manager.NewBeeMallOrderManager;
+import ltd.newbee.mall.service.PaymentService;
 import ltd.newbee.mall.util.PageQueryUtil;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
@@ -44,6 +46,8 @@ public class AppOrderController {
     private RedisUtil redisUtil;
     @Autowired
     private MallUserMapper mallUserMapper;
+    @Autowired
+    private PaymentService paymentService;
 
     @RequestMapping(value = "/createOrder", method = RequestMethod.POST)
     @ResponseBody
@@ -67,6 +71,7 @@ public class AppOrderController {
         userVO.setChannelId(1);
         userVO.setAddress(mallUser.getAddress());
         String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest.getGoodsInfo());
+        CreateOrderResultDto createOrderResultDto = paymentService.assemblyCreateOrderResultDto();
         return ResultGenerator.genSuccessDateResult(orderNo);
     }
 

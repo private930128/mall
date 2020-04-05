@@ -56,7 +56,12 @@ public class WechatService {
         String wxOpenId = response.getOpenid();
         String wxSessionKey = response.getSession_key();
         logger.info("wxOpenId = {}, wxSessionKey = {}", wxOpenId, wxSessionKey);
-        //3.生成token
+        //3.查询用户是否存在，用户不存在提示错误，需要注册
+        MallUser mallUser = mallUserMapper.selectByOpenId(wxOpenId);
+        if (mallUser == null) {
+            return null;
+        }
+        //4.生成token
         return new WechatAuthTokenVO(create3rdToken(wxOpenId, wxSessionKey, EXPIRES));
 
     }

@@ -86,6 +86,7 @@ public class AppUserController {
             user.setIsDeleted((byte) 0);
             user.setLockedFlag((byte) 0);
             WechatAuthTokenVO wechatAuthTokenVO = wechatService.registry(user);
+            logger.info("registry response wechatAuthTokenVO = {}", JSON.toJSON(wechatAuthTokenVO));
             return ResultGenerator.genSuccessDateResult(wechatAuthTokenVO);
         } catch (Exception e) {
             e.printStackTrace();

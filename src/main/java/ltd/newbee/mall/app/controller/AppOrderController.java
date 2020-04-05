@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,14 +63,14 @@ public class AppOrderController {
         if (StringUtils.isEmpty(openId)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
-        MallUser mallUser = mallUserMapper.selectByOpenId(openId);
-        if (mallUser == null) {
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
         NewBeeMallUserVO userVO = new NewBeeMallUserVO();
-        userVO.setUserId(mallUser.getUserId());
+        userVO.setUserId(mallUserList.get(0).getUserId());
         userVO.setChannelId(1);
-        userVO.setAddress(mallUser.getAddress());
+        userVO.setAddress(mallUserList.get(0).getAddress());
         String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest.getGoodsInfo());
         CreateOrderResultDto createOrderResultDto = paymentService.assemblyCreateOrderResultDto();
         return ResultGenerator.genSuccessDateResult(orderNo);
@@ -87,14 +88,14 @@ public class AppOrderController {
         if (StringUtils.isEmpty(openId)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
-        MallUser mallUser = mallUserMapper.selectByOpenId(openId);
-        if (mallUser == null) {
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
         Map<String, Object> params = new HashMap();
         params.put("page", 1);
         params.put("limit", 100);
-        params.put("userId", mallUser.getUserId());
+        params.put("userId", mallUserList.get(0).getUserId());
         PageQueryUtil pageQueryUtil = new PageQueryUtil(params);
         return ResultGenerator.genSuccessDateResult(newBeeMallOrderManager.getMyOrders(pageQueryUtil));
     }
@@ -111,12 +112,12 @@ public class AppOrderController {
         if (StringUtils.isEmpty(openId)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
-        MallUser mallUser = mallUserMapper.selectByOpenId(openId);
-        if (mallUser == null) {
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
 
-        return ResultGenerator.genSuccessDateResult(newBeeMallOrderManager.getOrderDetailByOrderNo(orderNo, mallUser.getUserId()));
+        return ResultGenerator.genSuccessDateResult(newBeeMallOrderManager.getOrderDetailByOrderNo(orderNo, mallUserList.get(0).getUserId()));
     }
 
     @RequestMapping(value = "/cancelOrder", method = RequestMethod.POST)
@@ -131,12 +132,12 @@ public class AppOrderController {
         if (StringUtils.isEmpty(openId)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
-        MallUser mallUser = mallUserMapper.selectByOpenId(openId);
-        if (mallUser == null) {
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
 
-        newBeeMallOrderManager.cancelOrder(cancelOrderRequest.getOrderNo(), mallUser.getUserId());
+        newBeeMallOrderManager.cancelOrder(cancelOrderRequest.getOrderNo(), mallUserList.get(0).getUserId());
         return ResultGenerator.genSuccessResult();
     }
 }

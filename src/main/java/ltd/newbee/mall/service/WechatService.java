@@ -16,9 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -57,8 +59,8 @@ public class WechatService {
         String wxSessionKey = response.getSession_key();
         logger.info("wxOpenId = {}, wxSessionKey = {}", wxOpenId, wxSessionKey);
         //3.查询用户是否存在，用户不存在提示错误，需要注册
-        MallUser mallUser = mallUserMapper.selectByOpenId(wxOpenId);
-        if (mallUser == null) {
+        List<MallUser> mallUser = mallUserMapper.selectByOpenId(wxOpenId);
+        if (CollectionUtils.isEmpty(mallUser)) {
             return null;
         }
         //4.生成token
@@ -71,7 +73,7 @@ public class WechatService {
         StringBuffer sb = new StringBuffer();
         sb.append(wxSessionKey).append("#").append(wxOpenId);
 
-        redisUtil.set(thirdSessionKey, sb.toString(), expires);
+        redisUtil.set(thirdSessionKey, wxOpenId, expires);
         return thirdSessionKey;
     }
 

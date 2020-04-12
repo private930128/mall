@@ -230,12 +230,12 @@ public class PaymentServiceImpl implements PaymentService {
                             + WxPayConfig.TRADETYPE + "</trade_type>" + "<sign>" + sign + "</sign>"
                             + "</xml>";
 
-            log.info("调试模式_统一下单接口 请求XML数据：" + xml);
+            log.info("paywxr request xml：" + xml);
 
             // 调用统一下单接口，并接受返回的结果
             String result = PayUtil.httpRequest(WxPayConfig.PAY_URL, "POST", xml);
 
-            log.info("调试模式_统一下单接口 返回XML数据：" + result);
+            log.info("paywxr response xml：" + result);
 
             // 将解析结果存储在HashMap中
             Map map = PayUtil.doXMLParse(result);

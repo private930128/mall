@@ -212,7 +212,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     @Override
     public boolean completeOrderPayment(String orderNo, PayStatusEnum payStatusEnum) {
         NewBeeMallOrder newBeeMallOrder = newBeeMallOrderMapper.selectByOrderNo(orderNo);
-        if (newBeeMallOrder != null && payStatusEnum == PayStatusEnum.PAY_SUCCESS) {
+        if (newBeeMallOrder != null && payStatusEnum == PayStatusEnum.PAY_ING) {
             NewBeeMallOrder newBeeMallOrder1 = new NewBeeMallOrder();
             newBeeMallOrder1.setOrderId(newBeeMallOrder.getOrderId());
             newBeeMallOrder1.setOrderStatus((byte) NewBeeMallOrderStatusEnum.OREDER_PAID.getOrderStatus());

@@ -191,16 +191,21 @@ public class PaymentController {
         Map map = PayUtil.doXMLParse(notityXml);
 
         String returnCode = (String) map.get("return_code");
+        log.info("---zhn test returnCode = {}", returnCode);
         if ("SUCCESS".equalsIgnoreCase(returnCode)) {
             // 验证签名是否正确
             Map<String, String> validParams = PayUtil.paraFilter(map); // 回调验签时需要去除sign和空值参数
+            log.info("---zhn test validParams = {}", JSON.toJSON(validParams));
             String validStr = PayUtil.createLinkString(validParams);// 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+            log.info("---zhn test validStr = {}", validStr);
             String sign = PayUtil.sign(validStr, WxPayConfig.API_PAY_KEY, "utf-8").toUpperCase();// 拼装生成服务器端验证的签名
+            log.info("---zhn test sign = {}", sign);
             // 根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
             if (sign.equals(map.get("sign"))) {
                 String orderNumber = (String) map.get("out_trade_no");// 订单号
                 String amount = (String) map.get("total_fee");// 价格
                 Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的分
+                log.info("---zhn test orderNumber = {}, amount= {}, totalPrice = {}", orderNumber, amount, totalPrice);
                 paymentService.payResult(orderNumber, 1, totalPrice);
                 // 通知微信服务器已经支付成功
                 resXml =
@@ -213,7 +218,7 @@ public class PaymentController {
                             + "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
         }
         log.info(resXml);
-        log.info("wxNotify begin");
+        log.info("wxNotify end");
 
 
         BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());

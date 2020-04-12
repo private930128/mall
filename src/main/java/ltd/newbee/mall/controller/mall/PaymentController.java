@@ -232,8 +232,8 @@ public class PaymentController {
     @ResponseBody
     public Result wxCompleteNotify(@RequestBody WxrPayRequest wxrPayRequest) throws Exception {
         log.info("wxCompleteNotify begin orderNo = {}", wxrPayRequest.getOrderNo());
-
-        paymentService.payResult(wxrPayRequest.getOrderNo(), 1, 1);
+//
+//        paymentService.payResult(wxrPayRequest.getOrderNo(), 1, 1);
         return ResultGenerator.genSuccessResult();
     }
 

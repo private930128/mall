@@ -200,7 +200,7 @@ public class PaymentController {
             if (sign.equals(map.get("sign"))) {
                 String orderNumber = (String) map.get("out_trade_no");// 订单号
                 String amount = (String) map.get("total_fee");// 价格
-                Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的厘
+                Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的分
                 paymentService.payResult(orderNumber, 1, totalPrice);
                 // 通知微信服务器已经支付成功
                 resXml =

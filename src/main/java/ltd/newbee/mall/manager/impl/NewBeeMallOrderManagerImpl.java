@@ -219,7 +219,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             newBeeMallOrder1.setPayStatus((byte) PayStatusEnum.PAY_SUCCESS.getPayStatus());
             newBeeMallOrder1.setPayTime(new Date());
             newBeeMallOrder1.setUpdateTime(new Date());
-            newBeeMallOrderMapper.updateByPrimaryKeySelective(newBeeMallOrder);
+            newBeeMallOrderMapper.updateByPrimaryKeySelective(newBeeMallOrder1);
             return true;
         }
         return false;

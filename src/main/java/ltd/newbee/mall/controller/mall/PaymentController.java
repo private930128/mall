@@ -173,7 +173,7 @@ public class PaymentController {
     @PostMapping("wxNotify")
     @ResponseBody
     public void wxNotify(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        log.info("进入回调");
+        log.info("wxNotify begin");
         BufferedReader br =
                 new BufferedReader(new InputStreamReader(
                         (ServletInputStream) request.getInputStream()));
@@ -186,7 +186,7 @@ public class PaymentController {
         // sb为微信返回的xml
         String notityXml = sb.toString();
         String resXml = "";
-        log.info("接收到的报文：" + notityXml);
+        log.info("get notityXml ：" + notityXml);
 
         Map map = PayUtil.doXMLParse(notityXml);
 
@@ -195,7 +195,7 @@ public class PaymentController {
             // 验证签名是否正确
             Map<String, String> validParams = PayUtil.paraFilter(map); // 回调验签时需要去除sign和空值参数
             String validStr = PayUtil.createLinkString(validParams);// 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-            String sign = PayUtil.sign(validStr, WxPayConfig.KEY, "utf-8").toUpperCase();// 拼装生成服务器端验证的签名
+            String sign = PayUtil.sign(validStr, WxPayConfig.API_PAY_KEY, "utf-8").toUpperCase();// 拼装生成服务器端验证的签名
             // 根据微信官网的介绍，此处不仅对回调的参数进行验签，还需要对返回的金额与系统订单的金额进行比对等
             if (sign.equals(map.get("sign"))) {
                 String orderNumber = (String) map.get("out_trade_no");// 订单号
@@ -213,7 +213,7 @@ public class PaymentController {
                             + "<return_msg><![CDATA[报文为空]]></return_msg>" + "</xml> ";
         }
         log.info(resXml);
-        log.info("微信支付回调数据结束");
+        log.info("wxNotify begin");
 
 
         BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
@@ -226,7 +226,7 @@ public class PaymentController {
     @PostMapping("/wxCompleteNotify")
     @ResponseBody
     public Result wxCompleteNotify(@RequestBody WxrPayRequest wxrPayRequest) throws Exception {
-        log.info("进入微信支付完成回调 orderNo = {}", wxrPayRequest.getOrderNo());
+        log.info("wxCompleteNotify begin orderNo = {}", wxrPayRequest.getOrderNo());
 
         paymentService.payResult(wxrPayRequest.getOrderNo(), 1, 1);
         return ResultGenerator.genSuccessResult();

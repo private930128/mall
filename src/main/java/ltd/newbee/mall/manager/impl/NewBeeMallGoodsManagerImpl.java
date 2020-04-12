@@ -9,6 +9,8 @@ import ltd.newbee.mall.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +33,12 @@ public class NewBeeMallGoodsManagerImpl implements NewBeeMallGoodsManager {
         Integer pageStartNum = (queryDto.getPageNum() - 1) * queryDto.getPageSize();
         queryDto.setPageStartNum(pageStartNum);
         List<NewBeeMallGoods> list = goodsMapper.queryGoods(queryDto);
-
-        return BeanUtil.copyList(list, AppGoodsInfoDto.class);
+        List<AppGoodsInfoDto> resultList = new ArrayList<>();
+        for (NewBeeMallGoods newBeeMallGoods : list) {
+            AppGoodsInfoDto appGoodsInfoDto = convert2AppGoodsInfoDto(newBeeMallGoods);
+            resultList.add(appGoodsInfoDto);
+        }
+        return resultList;
     }
 
     @Override
@@ -41,7 +47,22 @@ public class NewBeeMallGoodsManagerImpl implements NewBeeMallGoodsManager {
         if (newBeeMallGoods == null) {
             return null;
         }
+        return convert2AppGoodsInfoDto(newBeeMallGoods);
+    }
+
+    private AppGoodsInfoDto convert2AppGoodsInfoDto(NewBeeMallGoods newBeeMallGoods) {
+        if (newBeeMallGoods == null) {
+            return null;
+        }
         AppGoodsInfoDto appGoodsInfoDto = new AppGoodsInfoDto();
-        return (AppGoodsInfoDto) BeanUtil.copyProperties(newBeeMallGoods, appGoodsInfoDto);
+        BigDecimal result = new BigDecimal(newBeeMallGoods.getSellingPrice()).divide(new BigDecimal(1000));
+        appGoodsInfoDto.setSellingPrice(result.toString());
+        appGoodsInfoDto.setGoodsName(newBeeMallGoods.getGoodsName());
+        appGoodsInfoDto.setGoodsId(newBeeMallGoods.getGoodsId());
+        appGoodsInfoDto.setGoodsCoverImg(newBeeMallGoods.getGoodsCoverImg());
+        appGoodsInfoDto.setGoodsCategoryId(newBeeMallGoods.getGoodsCategoryId());
+        appGoodsInfoDto.setGoodsIntro(newBeeMallGoods.getGoodsIntro());
+        appGoodsInfoDto.setTag(newBeeMallGoods.getTag());
+        return appGoodsInfoDto;
     }
 }

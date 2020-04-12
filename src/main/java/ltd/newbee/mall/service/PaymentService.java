@@ -4,16 +4,15 @@ package ltd.newbee.mall.service;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
-import ltd.newbee.mall.app.dto.CreateOrderResultDto;
+import ltd.newbee.mall.app.dto.PaymentRequestDto;
 import ltd.newbee.mall.common.NewBeeMallException;
 import ltd.newbee.mall.entity.PaymentJournal;
-import ltd.newbee.mall.util.wxpay.PayUtil;
 
 public interface PaymentService {
 
     /**
      * 新增支付流水
-     * 
+     *
      * @param userId
      * @param nickName
      * @param payAppId
@@ -26,14 +25,14 @@ public interface PaymentService {
      * @throws NewBeeMallException
      */
     PaymentJournal buildPaymentJournal(Long userId, String nickName, String payAppId,
-            String payCode, String merchantId, String merchantOrderNo, String desc,
-            Integer payAmount) throws NewBeeMallException;
+                                       String payCode, String merchantId, String merchantOrderNo, String desc,
+                                       Integer payAmount) throws NewBeeMallException;
 
     PaymentJournal savePayLog(String merchantOrderNo, Integer payStatus, Integer payAmount);
 
     /**
      * 更新支付流水的金额
-     * 
+     *
      * @param paymentJournalId
      * @param payAmount
      */
@@ -41,7 +40,7 @@ public interface PaymentService {
 
     /**
      * 根据Id查询支付流水
-     * 
+     *
      * @param paymentJournalId
      * @return
      */
@@ -49,7 +48,7 @@ public interface PaymentService {
 
     /**
      * 支付流水No
-     * 
+     *
      * @param paymentDealNo
      * @return
      */
@@ -57,7 +56,7 @@ public interface PaymentService {
 
     /**
      * 更新paymentjournal
-     * 
+     *
      * @param paymentJournal
      */
     void updatePaymentJoural(PaymentJournal paymentJournal);
@@ -67,9 +66,8 @@ public interface PaymentService {
             throws NewBeeMallException;
 
 
-    Map<String, Object> paywxr(HttpServletRequest request,String orderNo);
+    Map<String, Object> paywxr(String openId, String orderNo);
 
     void payResult(String merchantOrderNo, Integer payStatus, Integer payAmount);
 
-    CreateOrderResultDto assemblyCreateOrderResultDto();
 }

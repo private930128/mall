@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,12 +102,29 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             List<NewBeeMallOrderItem> orderItems = newBeeMallOrderItemMapper.selectByOrderId(newBeeMallOrder.getOrderId());
             //获取订单项数据
             if (!CollectionUtils.isEmpty(orderItems)) {
-                List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = BeanUtil.copyList(orderItems, NewBeeMallOrderItemVO.class);
+                List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = new ArrayList<>();
+                for (NewBeeMallOrderItem newBeeMallOrderItem : orderItems) {
+                    NewBeeMallOrderItemVO newBeeMallOrderItemVO = new NewBeeMallOrderItemVO();
+                    newBeeMallOrderItemVO.setGoodsCount(newBeeMallOrderItem.getGoodsCount());
+                    newBeeMallOrderItemVO.setGoodsCoverImg(newBeeMallOrderItem.getGoodsCoverImg());
+                    newBeeMallOrderItemVO.setGoodsId(newBeeMallOrderItem.getGoodsId());
+                    newBeeMallOrderItemVO.setGoodsName(newBeeMallOrderItem.getGoodsName());
+                    BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(1000));
+                    newBeeMallOrderItemVO.setSellingPrice(result.toString());
+                    newBeeMallOrderItemVOS.add(newBeeMallOrderItemVO);
+                }
                 NewBeeMallOrderDetailVO newBeeMallOrderDetailVO = new NewBeeMallOrderDetailVO();
                 BeanUtil.copyProperties(newBeeMallOrder, newBeeMallOrderDetailVO);
                 newBeeMallOrderDetailVO.setOrderStatusString(NewBeeMallOrderStatusEnum.getNewBeeMallOrderStatusEnumByStatus(newBeeMallOrderDetailVO.getOrderStatus()).getName());
                 newBeeMallOrderDetailVO.setPayTypeString(PayTypeEnum.getPayTypeEnumByType(newBeeMallOrderDetailVO.getPayType()).getName());
                 newBeeMallOrderDetailVO.setNewBeeMallOrderItemVOS(newBeeMallOrderItemVOS);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ss:mm");
+                newBeeMallOrderDetailVO.setCreateTime(simpleDateFormat.format(newBeeMallOrder.getCreateTime()));
+                if (newBeeMallOrder.getPayTime() != null && newBeeMallOrder.getOrderStatus() >= 1 && newBeeMallOrder.getOrderStatus() <= 4) {
+                    newBeeMallOrderDetailVO.setPayTime(simpleDateFormat.format(newBeeMallOrder.getPayTime()));
+                }
+                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(1000));
+                newBeeMallOrderDetailVO.setTotalPrice(result.toString());
                 return newBeeMallOrderDetailVO;
             }
         }
@@ -123,7 +141,19 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
         List<NewBeeMallOrderListVO> orderListVOS = new ArrayList<>();
         if (total > 0) {
             //数据转换 将实体类转成vo
-            orderListVOS = BeanUtil.copyList(newBeeMallOrders, NewBeeMallOrderListVO.class);
+//            orderListVOS = BeanUtil.copyList(newBeeMallOrders, NewBeeMallOrderListVO.class);
+            for (NewBeeMallOrder newBeeMallOrder : newBeeMallOrders) {
+                NewBeeMallOrderListVO newBeeMallOrderListVO = new NewBeeMallOrderListVO();
+                BeanUtil.copyProperties(newBeeMallOrder, newBeeMallOrderListVO);
+                orderListVOS.add(newBeeMallOrderListVO);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ss:mm");
+                newBeeMallOrderListVO.setCreateTime(simpleDateFormat.format(newBeeMallOrder.getCreateTime()));
+                if (newBeeMallOrder.getPayTime() != null && newBeeMallOrder.getOrderStatus() >= 1 && newBeeMallOrder.getOrderStatus() <= 4) {
+                    newBeeMallOrderListVO.setPayTime(simpleDateFormat.format(newBeeMallOrder.getPayTime()));
+                }
+                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(1000));
+                newBeeMallOrderListVO.setTotalPrice(result.toString());
+            }
             //设置订单状态中文显示值
             for (NewBeeMallOrderListVO newBeeMallOrderListVO : orderListVOS) {
                 newBeeMallOrderListVO.setOrderStatusString(NewBeeMallOrderStatusEnum.getNewBeeMallOrderStatusEnumByStatus(newBeeMallOrderListVO.getOrderStatus()).getName());
@@ -137,7 +167,17 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                     if (itemByOrderIdMap.containsKey(newBeeMallOrderListVO.getOrderId())) {
                         List<NewBeeMallOrderItem> orderItemListTemp = itemByOrderIdMap.get(newBeeMallOrderListVO.getOrderId());
                         //将NewBeeMallOrderItem对象列表转换成NewBeeMallOrderItemVO对象列表
-                        List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = BeanUtil.copyList(orderItemListTemp, NewBeeMallOrderItemVO.class);
+                        List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = new ArrayList<>();
+                        for (NewBeeMallOrderItem newBeeMallOrderItem : orderItemListTemp) {
+                            NewBeeMallOrderItemVO newBeeMallOrderItemVO = new NewBeeMallOrderItemVO();
+                            newBeeMallOrderItemVO.setGoodsCount(newBeeMallOrderItem.getGoodsCount());
+                            newBeeMallOrderItemVO.setGoodsCoverImg(newBeeMallOrderItem.getGoodsCoverImg());
+                            newBeeMallOrderItemVO.setGoodsId(newBeeMallOrderItem.getGoodsId());
+                            newBeeMallOrderItemVO.setGoodsName(newBeeMallOrderItem.getGoodsName());
+                            BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(1000));
+                            newBeeMallOrderItemVO.setSellingPrice(result.toString());
+                            newBeeMallOrderItemVOS.add(newBeeMallOrderItemVO);
+                        }
                         newBeeMallOrderListVO.setNewBeeMallOrderItemVOS(newBeeMallOrderItemVOS);
                     }
                 }
@@ -171,6 +211,17 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
 
     @Override
     public boolean completeOrderPayment(String orderNo, PayStatusEnum payStatusEnum) {
+        NewBeeMallOrder newBeeMallOrder = newBeeMallOrderMapper.selectByOrderNo(orderNo);
+        if (newBeeMallOrder != null && payStatusEnum == PayStatusEnum.PAY_SUCCESS) {
+            NewBeeMallOrder newBeeMallOrder1 = new NewBeeMallOrder();
+            newBeeMallOrder1.setOrderId(newBeeMallOrder.getOrderId());
+            newBeeMallOrder1.setOrderStatus((byte) NewBeeMallOrderStatusEnum.OREDER_PAID.getOrderStatus());
+            newBeeMallOrder1.setPayStatus((byte) PayStatusEnum.PAY_SUCCESS.getPayStatus());
+            newBeeMallOrder1.setPayTime(new Date());
+            newBeeMallOrder1.setUpdateTime(new Date());
+            newBeeMallOrderMapper.updateByPrimaryKeySelective(newBeeMallOrder);
+            return true;
+        }
         return false;
     }
 

@@ -1,22 +1,31 @@
 package ltd.newbee.mall.controller.mall;
 
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import ltd.newbee.mall.app.constant.ResultMsgEnum;
+import ltd.newbee.mall.app.dto.WxrPayRequest;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.common.PayStatusEnum;
 import ltd.newbee.mall.common.PaymentStatusEnum;
 import ltd.newbee.mall.common.ServiceResultEnum;
+import ltd.newbee.mall.config.redis.RedisUtil;
 import ltd.newbee.mall.config.wxpay.WxPayConfig;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
+import ltd.newbee.mall.dao.MallUserMapper;
+import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.entity.NewBeeMallOrder;
 import ltd.newbee.mall.entity.PaymentJournal;
 import ltd.newbee.mall.service.NewBeeMallOrderService;
@@ -28,11 +37,9 @@ import ltd.newbee.mall.util.wxpay.PayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payment")
@@ -45,6 +52,12 @@ public class PaymentController {
 
     @Autowired
     private NewBeeMallOrderService newBeeMallOrderService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private MallUserMapper mallUserMapper;
 
     @PostMapping("/save")
     public Result save() {
@@ -118,35 +131,44 @@ public class PaymentController {
     }
 
     /**
-     *
-     * @param request
-     * @param orderNo
-     * @param httpSession
+     * @param wxrPayRequest
      * @return
      */
     @PostMapping("wxrPay")
     @ResponseBody
-    public Map<String, Object> wxrPay(HttpServletRequest request, String orderNo, HttpSession httpSession) {
-        Map<String, Object> map = new HashMap<>();
-//        NewBeeMallUserVO user = (NewBeeMallUserVO) httpSession.getAttribute(Constants.MALL_USER_SESSION_KEY);
-        NewBeeMallUserVO user = new NewBeeMallUserVO();
-        user.setUserId(10L);
-        String finishOrderResult = newBeeMallOrderService.finishOrder(orderNo, user.getUserId());
+    public Result wxrPay(@RequestBody WxrPayRequest wxrPayRequest) {
+        Object object = redisUtil.get(wxrPayRequest.getToken());
+        log.info("wxrPay getOpenId : wxrPayRequest = {}, object = {}", JSON.toJSON(wxrPayRequest), object);
+        if (object == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        String openId = object.toString();
+        if (StringUtils.isEmpty(openId)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+//        MallUser mallUser = mallUserList.get(0);
+        Map<String, Object> map;
+//        String finishOrderResult = newBeeMallOrderService.finishOrder(orderNo, mallUser.getUserId());
+        String orderNo = wxrPayRequest.getOrderNo();
         NewBeeMallOrder order = newBeeMallOrderService.getNewBeeMallOrderByOrderNo(orderNo);
         if (PayStatusEnum.PAY_SUCCESS.getPayStatus() == order.getPayStatus()) {
-            map.put("400", "订单已支付，请不要重复操作");
-        } else if(order == null){
-            map.put("400", ServiceResultEnum.ORDER_NOT_EXIST_ERROR.getResult());
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_PAID_ERROR.getCode(), ResultMsgEnum.ORDER_PAID_ERROR.getMsg());
+        } else if (order == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_NOT_EXIST.getCode(), ResultMsgEnum.ORDER_NOT_EXIST.getMsg());
         } else {
-            map = paymentService.paywxr(request, orderNo);
+            map = paymentService.paywxr(openId, orderNo);
         }
-        return map;
+        return ResultGenerator.genSuccessDateResult(map);
     }
 
     /**
-     * @Description:微信支付-回调接口
      * @return
      * @throws Exception
+     * @Description:微信支付-回调接口
      */
     @PostMapping("wxNotify")
     @ResponseBody
@@ -178,7 +200,7 @@ public class PaymentController {
             if (sign.equals(map.get("sign"))) {
                 String orderNumber = (String) map.get("out_trade_no");// 订单号
                 String amount = (String) map.get("total_fee");// 价格
-                Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的分
+                Integer totalPrice = Integer.valueOf(amount);// 服务器这边记录的是钱的厘
                 paymentService.payResult(orderNumber, 1, totalPrice);
                 // 通知微信服务器已经支付成功
                 resXml =
@@ -198,6 +220,16 @@ public class PaymentController {
         out.write(resXml.getBytes());
         out.flush();
         out.close();
+    }
+
+
+    @PostMapping("/wxCompleteNotify")
+    @ResponseBody
+    public Result wxCompleteNotify(@RequestBody WxrPayRequest wxrPayRequest) throws Exception {
+        log.info("进入微信支付完成回调 orderNo = {}", wxrPayRequest.getOrderNo());
+
+        paymentService.payResult(wxrPayRequest.getOrderNo(), 1, 1);
+        return ResultGenerator.genSuccessResult();
     }
 
 }

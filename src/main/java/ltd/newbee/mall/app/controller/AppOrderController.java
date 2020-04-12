@@ -5,9 +5,8 @@ import com.alibaba.fastjson.JSON;
 import ltd.newbee.mall.app.constant.ResultMsgEnum;
 import ltd.newbee.mall.app.dto.CancelOrderRequest;
 import ltd.newbee.mall.app.dto.CreateOrderRequest;
-import ltd.newbee.mall.app.dto.CreateOrderResultDto;
+import ltd.newbee.mall.app.dto.PaymentRequestDto;
 import ltd.newbee.mall.config.redis.RedisUtil;
-import ltd.newbee.mall.controller.vo.NewBeeMallShoppingCartItemVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
 import ltd.newbee.mall.dao.MallUserMapper;
 import ltd.newbee.mall.entity.MallUser;
@@ -72,7 +71,6 @@ public class AppOrderController {
         userVO.setChannelId(1);
         userVO.setAddress(mallUserList.get(0).getAddress());
         String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest.getGoodsInfo());
-        CreateOrderResultDto createOrderResultDto = paymentService.assemblyCreateOrderResultDto();
         return ResultGenerator.genSuccessDateResult(orderNo);
     }
 
@@ -80,7 +78,7 @@ public class AppOrderController {
     @ResponseBody
     public Result myOrderList(String token) {
         Object object = redisUtil.get(token);
-        logger.info("cancelOrder getOpenId : object = {}", object);
+        logger.info("myOrderList getOpenId : object = {}", object);
         if (object == null) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
@@ -104,7 +102,7 @@ public class AppOrderController {
     @ResponseBody
     public Result orderDetail(String token, String orderNo) {
         Object object = redisUtil.get(token);
-        logger.info("cancelOrder getOpenId : object = {}", object);
+        logger.info("orderDetail getOpenId : object = {}", object);
         if (object == null) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }

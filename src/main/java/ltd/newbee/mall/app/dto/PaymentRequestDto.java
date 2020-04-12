@@ -3,7 +3,7 @@ package ltd.newbee.mall.app.dto;
 /**
  * Created by zhanghenan on 2020/4/5.
  */
-public class CreateOrderResultDto {
+public class PaymentRequestDto {
 
     private String orderNo;
 

@@ -13,7 +13,7 @@ public class NewBeeMallOrderListVO implements Serializable {
 
     private String orderNo;
 
-    private Integer totalPrice;
+    private String totalPrice;
 
     private Byte payType;
 
@@ -23,7 +23,9 @@ public class NewBeeMallOrderListVO implements Serializable {
 
     private String userAddress;
 
-    private Date createTime;
+    private String createTime;
+
+    private String payTime;
 
     private List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS;
 
@@ -43,11 +45,11 @@ public class NewBeeMallOrderListVO implements Serializable {
         this.orderNo = orderNo;
     }
 
-    public Integer getTotalPrice() {
+    public String getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Integer totalPrice) {
+    public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -83,12 +85,20 @@ public class NewBeeMallOrderListVO implements Serializable {
         this.userAddress = userAddress;
     }
 
-    public Date getCreateTime() {
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
+    }
+
+    public String getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(String payTime) {
+        this.payTime = payTime;
     }
 
     public List<NewBeeMallOrderItemVO> getNewBeeMallOrderItemVOS() {

@@ -19,7 +19,7 @@ public class AppGoodsInfoDto {
 
     private String goodsCoverImg;
 
-    private Integer sellingPrice;
+    private String sellingPrice;
 
     private String tag;
 
@@ -63,11 +63,11 @@ public class AppGoodsInfoDto {
         this.goodsCoverImg = goodsCoverImg;
     }
 
-    public Integer getSellingPrice() {
+    public String getSellingPrice() {
         return sellingPrice;
     }
 
-    public void setSellingPrice(Integer sellingPrice) {
+    public void setSellingPrice(String sellingPrice) {
         this.sellingPrice = sellingPrice;
     }
 

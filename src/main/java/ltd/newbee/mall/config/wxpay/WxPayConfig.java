@@ -9,11 +9,13 @@ public class WxPayConfig {
     // 微信支付的商户密钥
     public static final String KEY = "ab463a2de2212c761718d8e236e440c8";
     // 支付成功后的服务器回调url
-    public static final String NOTIFY_URL = "http://localhost:8080/payment/wxNotify";
+    public static final String NOTIFY_URL = "http://182.92.254.228/payment/wxNotify";
     // 签名方式，固定值
     public static final String SIGNTYPE = "MD5";
     // 交易类型，小程序支付的固定值为JSAPI
     public static final String TRADETYPE = "JSAPI";
     // 微信统一下单接口地址
     public static final String PAY_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+
+    public static final String API_PAY_KEY = "5befb935587318b44985c3cea4c6f57a";
 }

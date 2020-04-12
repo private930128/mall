@@ -78,7 +78,7 @@ public class WechatService {
     }
 
     public WechatAuthTokenVO registry(MallUser user) throws Exception {
-        logger.info("wechatLogin param : user = {}", JSON.toJSON(user));
+        logger.info("registry param : user = {}", JSON.toJSON(user));
         //1.获取openId
         WechatAuthCodeResponseVO response = this.weChatApiService.jscode2session(wechatAuthProperties.getAppId(),
                 wechatAuthProperties.getSecret(),

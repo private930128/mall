@@ -7,13 +7,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
-import ltd.newbee.mall.app.dto.CreateOrderResultDto;
+import com.alibaba.fastjson.JSON;
+import ltd.newbee.mall.app.dto.PaymentRequestDto;
 import ltd.newbee.mall.common.NewBeeMallException;
 import ltd.newbee.mall.common.PayStatusEnum;
 import ltd.newbee.mall.common.PaymentStatusEnum;
 import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.config.wxpay.WxPayConfig;
+import ltd.newbee.mall.dao.NewBeeMallOrderMapper;
 import ltd.newbee.mall.dao.PaymentJournalMapper;
+import ltd.newbee.mall.entity.NewBeeMallOrder;
 import ltd.newbee.mall.entity.PaymentJournal;
 import ltd.newbee.mall.manager.NewBeeMallOrderManager;
 import ltd.newbee.mall.service.PaymentService;
@@ -38,11 +41,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private NewBeeMallOrderManager mallOrderManager;
 
+    @Autowired
+    private NewBeeMallOrderMapper newBeeMallOrderMapper;
 
     @Override
     public PaymentJournal buildPaymentJournal(Long userId, String nickName, String payAppId,
-            String payCode, String merchantId, String merchantOrderNo, String desc,
-            Integer payAmount) throws NewBeeMallException {
+                                              String payCode, String merchantId, String merchantOrderNo, String desc,
+                                              Integer payAmount) throws NewBeeMallException {
         // 首先该userId下面这个商户订单号是否已经存在
         PaymentJournal where = new PaymentJournal();
         where.setMerchantOrderNo(merchantOrderNo);
@@ -111,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public void updatePaymentJournalMoney(Long paymentJournalId, Integer payAmount,
-            Integer payStatus) {
+                                          Integer payStatus) {
         PaymentJournal updatePaymentJournal = new PaymentJournal();
         updatePaymentJournal.setPaymentJournalId(paymentJournalId);
         updatePaymentJournal.setPayStatus(payStatus);
@@ -178,9 +183,8 @@ public class PaymentServiceImpl implements PaymentService {
         return insertPaymentJournal;
     }
 
-
     @Override
-    public Map<String, Object> paywxr(HttpServletRequest request, String orderNo) {
+    public Map<String, Object> paywxr(String openId, String orderNo) {
         try {
             // 生成的随机字符串
             String nonce_str = PayUtil.getRandomStringByLength(32);
@@ -189,15 +193,16 @@ public class PaymentServiceImpl implements PaymentService {
             // 获取客户端的ip地址
             String spbill_create_ip = PayUtil.getLocalIp(); // 获得终端IP
 
-            String openid = "oa_D74lyn7SCvBhzQGCqeC4uxBfI";
-//            String openid = request.getParameter("openId");
             //TODO price
-            float price = Float.parseFloat("1");
-            int price1 = (int) (price * 100);
+            NewBeeMallOrder newBeeMallOrder = newBeeMallOrderMapper.selectByOrderNo(orderNo);
+            if (newBeeMallOrder == null) {
+                return null;
+            }
+            int price1 = newBeeMallOrder.getTotalPrice();
             String p = price1 + "";
             // 组装参数，用户生成统一下单接口的签名
             Map<String, String> packageParams = new HashMap<String, String>();
-            packageParams.put("", WxPayConfig.APPID);
+            packageParams.put("appid", WxPayConfig.APPID);
             packageParams.put("mch_id", WxPayConfig.MCH_ID);
             packageParams.put("nonce_str", nonce_str);
             packageParams.put("body", body);
@@ -206,19 +211,19 @@ public class PaymentServiceImpl implements PaymentService {
             packageParams.put("spbill_create_ip", spbill_create_ip);
             packageParams.put("notify_url", WxPayConfig.NOTIFY_URL);// 支付成功后的回调地址
             packageParams.put("trade_type", WxPayConfig.TRADETYPE);// 支付方式
-            packageParams.put("openid", openid);
-
+            packageParams.put("openid", openId);
+            log.info("packageParams = {}", JSON.toJSON(packageParams));
             String prestr = PayUtil.createLinkString(packageParams); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-
+            log.info("prestr = {}", JSON.toJSON(packageParams));
             // MD5运算生成签名，这里是第一次签名，用于调用统一下单接口
-            String sign = PayUtil.sign(prestr, WxPayConfig.KEY, "utf-8").toUpperCase();
+            String sign = PayUtil.sign(prestr, WxPayConfig.API_PAY_KEY, "utf-8").toUpperCase();
 
             // 拼接统一下单接口使用的xml数据，要将上一步生成的签名一起拼接进去
             String xml =
                     "<xml>" + "<appid>" + WxPayConfig.APPID + "</appid>" + "<body><![CDATA[" + body
                             + "]]></body>" + "<mch_id>" + WxPayConfig.MCH_ID + "</mch_id>"
                             + "<nonce_str>" + nonce_str + "</nonce_str>" + "<notify_url>"
-                            + WxPayConfig.NOTIFY_URL + "</notify_url>" + "<openid>" + openid
+                            + WxPayConfig.NOTIFY_URL + "</notify_url>" + "<openid>" + openId
                             + "</openid>" + "<out_trade_no>" + orderNo + "</out_trade_no>"
                             + "<spbill_create_ip>" + spbill_create_ip + "</spbill_create_ip>"
                             + "<total_fee>" + p + "</total_fee>" + "<trade_type>"
@@ -247,11 +252,11 @@ public class PaymentServiceImpl implements PaymentService {
                 // 拼接签名需要的参数
                 String stringSignTemp =
                         "appId=" + WxPayConfig.APPID + "&nonceStr=" + nonce_str
-                                + "&package=prepay_id=" + prepay_id + "&signType="+ WxPayConfig.SIGNTYPE+"&timeStamp="
+                                + "&package=prepay_id=" + prepay_id + "&signType=" + WxPayConfig.SIGNTYPE + "&timeStamp="
                                 + timeStamp;
                 // 再次签名，这个签名用于小程序端调用wx.requesetPayment方法
                 String paySign =
-                        PayUtil.sign(stringSignTemp, WxPayConfig.KEY, "utf-8").toUpperCase();
+                        PayUtil.sign(stringSignTemp, WxPayConfig.API_PAY_KEY, "utf-8").toUpperCase();
 
                 response.put("paySign", paySign);
             }
@@ -259,7 +264,7 @@ public class PaymentServiceImpl implements PaymentService {
             response.put("appid", WxPayConfig.APPID);
 
             //TODO 写支付前的业务代码
-            this.savePayLog(orderNo,PaymentStatusEnum.WAIT_PAY.getIndex(), price1);
+            this.savePayLog(orderNo, PaymentStatusEnum.WAIT_PAY.getIndex(), price1);
 
             return response;
         } catch (Exception e) {
@@ -291,21 +296,15 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void payResult(String merchantOrderNo, Integer payStatus, Integer payAmount) {
 
-        if(payStatus == 1) {
+        if (payStatus == 1) {
             mallOrderManager.completeOrderPayment(merchantOrderNo, PayStatusEnum.PAY_SUCCESS);
         }
         this.savePayLog(merchantOrderNo, payStatus, payAmount);
     }
 
-    @Override
-    public CreateOrderResultDto assemblyCreateOrderResultDto() {
-        CreateOrderResultDto createOrderResultDto = new CreateOrderResultDto();
-        createOrderResultDto.setOrderNo("");
-        createOrderResultDto.setTimeStamp(String.valueOf(new Date().getTime()));
-        createOrderResultDto.setNonceStr(""); // 随机字符，长度32个字符一下
-        createOrderResultDto.setPackageStr("prepay_id=" + ""); // 统一下单接口返回的 prepay_id 参数值，提交格式如：prepay_id=***
-        createOrderResultDto.setPaySign("");
-        return createOrderResultDto;
+    public static void main(String[] args) {
+        String s = "5befb935587318b44985c3cea4c6f57a";
+        System.out.println(s.length());
     }
 
 }

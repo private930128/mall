@@ -109,7 +109,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                     newBeeMallOrderItemVO.setGoodsCoverImg(newBeeMallOrderItem.getGoodsCoverImg());
                     newBeeMallOrderItemVO.setGoodsId(newBeeMallOrderItem.getGoodsId());
                     newBeeMallOrderItemVO.setGoodsName(newBeeMallOrderItem.getGoodsName());
-                    BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(1000));
+                    BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(100));
                     newBeeMallOrderItemVO.setSellingPrice(result.toString());
                     newBeeMallOrderItemVOS.add(newBeeMallOrderItemVO);
                 }
@@ -123,7 +123,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                 if (newBeeMallOrder.getPayTime() != null && newBeeMallOrder.getOrderStatus() >= 1 && newBeeMallOrder.getOrderStatus() <= 4) {
                     newBeeMallOrderDetailVO.setPayTime(simpleDateFormat.format(newBeeMallOrder.getPayTime()));
                 }
-                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(1000));
+                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(100));
                 newBeeMallOrderDetailVO.setTotalPrice(result.toString());
                 return newBeeMallOrderDetailVO;
             }
@@ -151,7 +151,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                 if (newBeeMallOrder.getPayTime() != null && newBeeMallOrder.getOrderStatus() >= 1 && newBeeMallOrder.getOrderStatus() <= 4) {
                     newBeeMallOrderListVO.setPayTime(simpleDateFormat.format(newBeeMallOrder.getPayTime()));
                 }
-                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(1000));
+                BigDecimal result = new BigDecimal(newBeeMallOrder.getTotalPrice()).divide(new BigDecimal(100));
                 newBeeMallOrderListVO.setTotalPrice(result.toString());
             }
             //设置订单状态中文显示值
@@ -174,7 +174,7 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                             newBeeMallOrderItemVO.setGoodsCoverImg(newBeeMallOrderItem.getGoodsCoverImg());
                             newBeeMallOrderItemVO.setGoodsId(newBeeMallOrderItem.getGoodsId());
                             newBeeMallOrderItemVO.setGoodsName(newBeeMallOrderItem.getGoodsName());
-                            BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(1000));
+                            BigDecimal result = new BigDecimal(newBeeMallOrderItem.getSellingPrice()).divide(new BigDecimal(100));
                             newBeeMallOrderItemVO.setSellingPrice(result.toString());
                             newBeeMallOrderItemVOS.add(newBeeMallOrderItemVO);
                         }

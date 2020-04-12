@@ -55,7 +55,7 @@ public class NewBeeMallGoodsManagerImpl implements NewBeeMallGoodsManager {
             return null;
         }
         AppGoodsInfoDto appGoodsInfoDto = new AppGoodsInfoDto();
-        BigDecimal result = new BigDecimal(newBeeMallGoods.getSellingPrice()).divide(new BigDecimal(1000));
+        BigDecimal result = new BigDecimal(newBeeMallGoods.getSellingPrice()).divide(new BigDecimal(100));
         appGoodsInfoDto.setSellingPrice(result.toString());
         appGoodsInfoDto.setGoodsName(newBeeMallGoods.getGoodsName());
         appGoodsInfoDto.setGoodsId(newBeeMallGoods.getGoodsId());

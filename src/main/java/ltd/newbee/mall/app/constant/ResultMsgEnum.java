@@ -12,7 +12,10 @@ public enum ResultMsgEnum {
     USER_NOT_EXIST(1005, "用户不存在，请注册"),
 
     ORDER_PAID_ERROR(2001, "订单已支付，请不要重复操作"),
-    ORDER_NOT_EXIST(2002, "该订单不存在!!"),;
+    ORDER_NOT_EXIST(2002, "该订单不存在!!"),
+
+    MSG_LIMIT_IN_ONE_MINUTE(3001, "一分钟内短信发送受限"),
+    MSG_LIMIT_IN_ONE_DAY(3002, "当天短信发送受限");
 
     private Integer code;
     private String msg;

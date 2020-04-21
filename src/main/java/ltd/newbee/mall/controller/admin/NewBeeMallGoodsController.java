@@ -1,15 +1,20 @@
 package ltd.newbee.mall.controller.admin;
 
+import com.alibaba.fastjson.JSON;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.common.NewBeeMallCategoryLevelEnum;
 import ltd.newbee.mall.common.ServiceResultEnum;
+import ltd.newbee.mall.controller.vo.NewBeeMallGoodsVo;
 import ltd.newbee.mall.entity.GoodsCategory;
 import ltd.newbee.mall.entity.NewBeeMallGoods;
 import ltd.newbee.mall.service.NewBeeMallCategoryService;
 import ltd.newbee.mall.service.NewBeeMallGoodsService;
+import ltd.newbee.mall.service.impl.NewBeeMallGoodsServiceImpl;
 import ltd.newbee.mall.util.PageQueryUtil;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -17,7 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author 13
@@ -28,6 +36,8 @@ import java.util.*;
 @Controller
 @RequestMapping("/admin")
 public class NewBeeMallGoodsController {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(NewBeeMallGoodsController.class);
 
     @Resource
     private NewBeeMallGoodsService newBeeMallGoodsService;
@@ -62,9 +72,12 @@ public class NewBeeMallGoodsController {
     }
 
     @GetMapping("/goods/edit/{goodsId}")
-    public String edit(HttpServletRequest request, @PathVariable("goodsId") Long goodsId) {
+    public String edit(HttpServletRequest request, @PathVariable("goodsId") String goodsId) {
+        if (!isNumericzidai(goodsId)) {
+            return "admin/newbee_mall_goods_edit";
+        }
         request.setAttribute("path", "edit");
-        NewBeeMallGoods newBeeMallGoods = newBeeMallGoodsService.getNewBeeMallGoodsById(goodsId);
+        NewBeeMallGoods newBeeMallGoods = newBeeMallGoodsService.getNewBeeMallGoodsById(Long.valueOf(goodsId));
         if (newBeeMallGoods == null) {
             return "error/error_400";
         }
@@ -113,7 +126,24 @@ public class NewBeeMallGoodsController {
                 }
             }
         }
-        request.setAttribute("goods", newBeeMallGoods);
+        NewBeeMallGoodsVo newBeeMallGoodsVo = new NewBeeMallGoodsVo();
+        newBeeMallGoodsVo.setGoodsId(newBeeMallGoods.getGoodsId());
+        newBeeMallGoodsVo.setGoodsName(newBeeMallGoods.getGoodsName());
+        newBeeMallGoodsVo.setGoodsIntro(newBeeMallGoods.getGoodsIntro());
+        newBeeMallGoodsVo.setGoodsCategoryId(newBeeMallGoods.getGoodsCategoryId());
+        newBeeMallGoodsVo.setGoodsCoverImg(newBeeMallGoods.getGoodsCoverImg());
+        newBeeMallGoodsVo.setGoodsCarousel(newBeeMallGoods.getGoodsCarousel());
+        newBeeMallGoodsVo.setOriginalPrice(new BigDecimal(newBeeMallGoods.getOriginalPrice()).divide(new BigDecimal(100)));
+        newBeeMallGoodsVo.setSellingPrice(new BigDecimal(newBeeMallGoods.getSellingPrice()).divide(new BigDecimal(100)));
+        newBeeMallGoodsVo.setStockNum(newBeeMallGoods.getStockNum());
+        newBeeMallGoodsVo.setTag(newBeeMallGoods.getTag());
+        newBeeMallGoodsVo.setGoodsSellStatus(newBeeMallGoods.getGoodsSellStatus());
+        newBeeMallGoodsVo.setCreateTime(newBeeMallGoods.getCreateTime());
+        newBeeMallGoodsVo.setCreateUser(newBeeMallGoods.getCreateUser());
+        newBeeMallGoodsVo.setUpdateTime(newBeeMallGoods.getUpdateTime());
+        newBeeMallGoodsVo.setUpdateUser(newBeeMallGoods.getUpdateUser());
+        newBeeMallGoodsVo.setGoodsDetailContent(newBeeMallGoods.getGoodsDetailContent());
+        request.setAttribute("goods", newBeeMallGoodsVo);
         request.setAttribute("path", "goods-edit");
         return "admin/newbee_mall_goods_edit";
     }
@@ -124,6 +154,7 @@ public class NewBeeMallGoodsController {
     @RequestMapping(value = "/goods/list", method = RequestMethod.GET)
     @ResponseBody
     public Result list(@RequestParam Map<String, Object> params) {
+        LOGGER.info("--------zhn test--------params = {}", JSON.toJSON(params));
         if (StringUtils.isEmpty(params.get("page")) || StringUtils.isEmpty(params.get("limit"))) {
             return ResultGenerator.genFailResult("参数异常！");
         }
@@ -136,19 +167,19 @@ public class NewBeeMallGoodsController {
      */
     @RequestMapping(value = "/goods/save", method = RequestMethod.POST)
     @ResponseBody
-    public Result save(@RequestBody NewBeeMallGoods newBeeMallGoods) {
-        if (StringUtils.isEmpty(newBeeMallGoods.getGoodsName())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsIntro())
-                || StringUtils.isEmpty(newBeeMallGoods.getTag())
-                || Objects.isNull(newBeeMallGoods.getOriginalPrice())
-                || Objects.isNull(newBeeMallGoods.getGoodsCategoryId())
-                || Objects.isNull(newBeeMallGoods.getStockNum())
-                || Objects.isNull(newBeeMallGoods.getGoodsSellStatus())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsCoverImg())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsDetailContent())) {
+    public Result save(@RequestBody NewBeeMallGoodsVo newBeeMallGoodsVo) {
+        if (StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsName())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsIntro())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getTag())
+                || Objects.isNull(newBeeMallGoodsVo.getOriginalPrice())
+                || Objects.isNull(newBeeMallGoodsVo.getGoodsCategoryId())
+                || Objects.isNull(newBeeMallGoodsVo.getStockNum())
+                || Objects.isNull(newBeeMallGoodsVo.getGoodsSellStatus())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsCoverImg())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsDetailContent())) {
             return ResultGenerator.genFailResult("参数异常！");
         }
-        String result = newBeeMallGoodsService.saveNewBeeMallGoods(newBeeMallGoods);
+        String result = newBeeMallGoodsService.saveNewBeeMallGoods(convert2NewBeeMallGoods(newBeeMallGoodsVo));
         if (ServiceResultEnum.SUCCESS.getResult().equals(result)) {
             return ResultGenerator.genSuccessResult();
         } else {
@@ -162,20 +193,20 @@ public class NewBeeMallGoodsController {
      */
     @RequestMapping(value = "/goods/update", method = RequestMethod.POST)
     @ResponseBody
-    public Result update(@RequestBody NewBeeMallGoods newBeeMallGoods) {
-        if (Objects.isNull(newBeeMallGoods.getGoodsId())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsName())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsIntro())
-                || StringUtils.isEmpty(newBeeMallGoods.getTag())
-                || Objects.isNull(newBeeMallGoods.getOriginalPrice())
-                || Objects.isNull(newBeeMallGoods.getGoodsCategoryId())
-                || Objects.isNull(newBeeMallGoods.getStockNum())
-                || Objects.isNull(newBeeMallGoods.getGoodsSellStatus())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsCoverImg())
-                || StringUtils.isEmpty(newBeeMallGoods.getGoodsDetailContent())) {
+    public Result update(@RequestBody NewBeeMallGoodsVo newBeeMallGoodsVo) {
+        if (Objects.isNull(newBeeMallGoodsVo.getGoodsId())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsName())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsIntro())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getTag())
+                || Objects.isNull(newBeeMallGoodsVo.getOriginalPrice())
+                || Objects.isNull(newBeeMallGoodsVo.getGoodsCategoryId())
+                || Objects.isNull(newBeeMallGoodsVo.getStockNum())
+                || Objects.isNull(newBeeMallGoodsVo.getGoodsSellStatus())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsCoverImg())
+                || StringUtils.isEmpty(newBeeMallGoodsVo.getGoodsDetailContent())) {
             return ResultGenerator.genFailResult("参数异常！");
         }
-        String result = newBeeMallGoodsService.updateNewBeeMallGoods(newBeeMallGoods);
+        String result = newBeeMallGoodsService.updateNewBeeMallGoods(convert2NewBeeMallGoods(newBeeMallGoodsVo));
         if (ServiceResultEnum.SUCCESS.getResult().equals(result)) {
             return ResultGenerator.genSuccessResult();
         } else {
@@ -213,6 +244,36 @@ public class NewBeeMallGoodsController {
         } else {
             return ResultGenerator.genFailResult("修改失败");
         }
+    }
+
+    private NewBeeMallGoods convert2NewBeeMallGoods(NewBeeMallGoodsVo newBeeMallGoodsVo) {
+        NewBeeMallGoods newBeeMallGoods = new NewBeeMallGoods();
+        newBeeMallGoods.setGoodsId(newBeeMallGoodsVo.getGoodsId());
+        newBeeMallGoods.setGoodsName(newBeeMallGoodsVo.getGoodsName());
+        newBeeMallGoods.setGoodsIntro(newBeeMallGoodsVo.getGoodsIntro());
+        newBeeMallGoods.setGoodsCategoryId(newBeeMallGoodsVo.getGoodsCategoryId());
+        newBeeMallGoods.setGoodsCoverImg(newBeeMallGoodsVo.getGoodsCoverImg());
+        newBeeMallGoods.setGoodsCarousel(newBeeMallGoodsVo.getGoodsCarousel());
+        newBeeMallGoods.setOriginalPrice(newBeeMallGoodsVo.getOriginalPrice().multiply(new BigDecimal(100)).intValue());
+        newBeeMallGoods.setSellingPrice(newBeeMallGoodsVo.getSellingPrice().multiply(new BigDecimal(100)).intValue());
+        newBeeMallGoods.setStockNum(newBeeMallGoodsVo.getStockNum());
+        newBeeMallGoods.setTag(newBeeMallGoodsVo.getTag());
+        newBeeMallGoods.setGoodsSellStatus(newBeeMallGoodsVo.getGoodsSellStatus());
+        newBeeMallGoods.setCreateTime(newBeeMallGoodsVo.getCreateTime());
+        newBeeMallGoods.setCreateUser(newBeeMallGoodsVo.getCreateUser());
+        newBeeMallGoods.setUpdateTime(newBeeMallGoodsVo.getUpdateTime());
+        newBeeMallGoods.setUpdateUser(newBeeMallGoodsVo.getUpdateUser());
+        newBeeMallGoods.setGoodsDetailContent(newBeeMallGoodsVo.getGoodsDetailContent());
+        return newBeeMallGoods;
+    }
+
+    public static boolean isNumericzidai(String str) {
+        Pattern pattern = Pattern.compile("-?[0-9]+\\.?[0-9]*");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 
 }

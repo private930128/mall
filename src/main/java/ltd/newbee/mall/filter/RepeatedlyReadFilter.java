@@ -16,7 +16,7 @@ public class RepeatedlyReadFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        logger.debug("复制request.getInputStream流");
+        logger.info("复制request.getInputStream流");
         chain.doFilter(new RepeatedlyReadRequestWrapper(request), response);
     }
 

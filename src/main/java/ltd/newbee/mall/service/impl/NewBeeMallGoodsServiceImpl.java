@@ -1,6 +1,8 @@
 package ltd.newbee.mall.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import ltd.newbee.mall.common.ServiceResultEnum;
+import ltd.newbee.mall.controller.vo.NewBeeMallGoodsVo;
 import ltd.newbee.mall.controller.vo.NewBeeMallSearchGoodsVO;
 import ltd.newbee.mall.dao.NewBeeMallGoodsMapper;
 import ltd.newbee.mall.entity.NewBeeMallGoods;
@@ -8,10 +10,13 @@ import ltd.newbee.mall.service.NewBeeMallGoodsService;
 import ltd.newbee.mall.util.BeanUtil;
 import ltd.newbee.mall.util.PageQueryUtil;
 import ltd.newbee.mall.util.PageResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,14 +24,40 @@ import java.util.List;
 @Service
 public class NewBeeMallGoodsServiceImpl implements NewBeeMallGoodsService {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(NewBeeMallGoodsServiceImpl.class);
+
     @Autowired
     private NewBeeMallGoodsMapper goodsMapper;
 
+
     @Override
     public PageResult getNewBeeMallGoodsPage(PageQueryUtil pageUtil) {
+        LOGGER.info("--------zhn test--------pageUtil = {}", JSON.toJSON(pageUtil));
         List<NewBeeMallGoods> goodsList = goodsMapper.findNewBeeMallGoodsList(pageUtil);
+        LOGGER.info("--------zhn test--------goodsList = {}", JSON.toJSON(goodsList));
+        List<NewBeeMallGoodsVo> resultlist = new ArrayList<>();
+        for (NewBeeMallGoods goods : goodsList) {
+            NewBeeMallGoodsVo newBeeMallGoodsVo = new NewBeeMallGoodsVo();
+            newBeeMallGoodsVo.setGoodsId(goods.getGoodsId());
+            newBeeMallGoodsVo.setGoodsName(goods.getGoodsName());
+            newBeeMallGoodsVo.setGoodsIntro(goods.getGoodsIntro());
+            newBeeMallGoodsVo.setGoodsCategoryId(goods.getGoodsCategoryId());
+            newBeeMallGoodsVo.setGoodsCoverImg(goods.getGoodsCoverImg());
+            newBeeMallGoodsVo.setGoodsCarousel(goods.getGoodsCarousel());
+            newBeeMallGoodsVo.setOriginalPrice(new BigDecimal(goods.getOriginalPrice()).divide(new BigDecimal(100)));
+            newBeeMallGoodsVo.setSellingPrice(new BigDecimal(goods.getSellingPrice()).divide(new BigDecimal(100)));
+            newBeeMallGoodsVo.setStockNum(goods.getStockNum());
+            newBeeMallGoodsVo.setTag(goods.getTag());
+            newBeeMallGoodsVo.setGoodsSellStatus(goods.getGoodsSellStatus());
+            newBeeMallGoodsVo.setCreateTime(goods.getCreateTime());
+            newBeeMallGoodsVo.setCreateUser(goods.getCreateUser());
+            newBeeMallGoodsVo.setUpdateTime(goods.getUpdateTime());
+            newBeeMallGoodsVo.setUpdateUser(goods.getUpdateUser());
+            newBeeMallGoodsVo.setGoodsDetailContent(goods.getGoodsDetailContent());
+            resultlist.add(newBeeMallGoodsVo);
+        }
         int total = goodsMapper.getTotalNewBeeMallGoods(pageUtil);
-        PageResult pageResult = new PageResult(goodsList, total, pageUtil.getLimit(), pageUtil.getPage());
+        PageResult pageResult = new PageResult(resultlist, total, pageUtil.getLimit(), pageUtil.getPage());
         return pageResult;
     }
 

@@ -27,6 +27,8 @@ public class MallUser {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
+    private String password;
+
     public Long getUserId() {
         return userId;
     }
@@ -97,6 +99,14 @@ public class MallUser {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

@@ -10,6 +10,9 @@ public enum ResultMsgEnum {
     VERIFICATION_CODE_OVERDUE(1003, "验证码过期,请重新验证"),
     VERIFICATION_CODE_ERROR(1004, "验证码错误,请重新输入"),
     USER_NOT_EXIST(1005, "用户不存在，请注册"),
+    REGISTRY_PASSWORD_CONFIRM_ERROR(1006, "两次密码输入不一致"),
+    USER_EXIST(1007, "用户已存在,请登录"),
+    PASSWORD_ERROR(1008, "密码错误,请重试"),
 
     ORDER_PAID_ERROR(2001, "订单已支付，请不要重复操作"),
     ORDER_NOT_EXIST(2002, "该订单不存在!!"),

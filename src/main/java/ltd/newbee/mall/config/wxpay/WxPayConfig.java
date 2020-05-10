@@ -18,4 +18,7 @@ public class WxPayConfig {
     public static final String PAY_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
     public static final String API_PAY_KEY = "5befb935587318b44985c3cea4c6f57a";
+
+    // 交易类型，H5支付的固定值为MWEB
+    public static final String H5_TRADETYPE = "MWEB";
 }

@@ -68,6 +68,8 @@ public interface PaymentService {
 
     Map<String, Object> paywxr(String openId, String orderNo);
 
+    Map<String, Object> h5Paywxr(String orderNo);
+
     void payResult(String merchantOrderNo, Integer payStatus, Integer payAmount);
 
 }

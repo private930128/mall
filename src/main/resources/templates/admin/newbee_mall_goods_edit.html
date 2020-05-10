@@ -155,12 +155,21 @@
                                 </div>
                                 <br>
                                 <div class="form-group">
-                                    <div class="col-sm-4">
-                                        <button class="btn btn-info" style="margin-bottom: 5px;"
-                                                id="uploadGoodsCoverImg">
-                                            <i class="fa fa-picture-o"></i>&nbsp;上传商品主图
-                                        </button>
-                                    </div>
+                                    <!--<div class="col-sm-4">-->
+                                    <!--<button class="btn btn-info" style="margin-bottom: 5px;"-->
+                                    <!--id="uploadGoodsCoverImg">-->
+                                    <!--<i class="fa fa-picture-o"></i>&nbsp;上传商品主图-->
+                                    <!--</button>-->
+                                    <!--</div>-->
+                                    <form enctype="multipart/form-data" id="formUpload">
+                                        <input name="file" type="file" id="file"/>
+                                        <!--贴图库Token-->
+                                        <input name="Token" type="hidden" id="Token"
+                                               value="4a6f85a394d2ca0464a2bb1e64ed8a96865c5a7d:cSgyldHtXBIAynl98500KMl4yPE=:eyJkZWFkbGluZSI6MTU4OTAxNzQzMCwiYWN0aW9uIjoiZ2V0IiwidWlkIjoiNzE4NTU3IiwiYWlkIjoiMTY4NzUwMiIsImZyb20iOiJmaWxlIn0="/>
+                                        <input type="button" value="点击上传图片" id="Upload"/>
+                                    </form>
+                                    <progress style="display:none"></progress>
+                                    <div id="res"></div>
                                 </div>
                             </form>
                         </div>

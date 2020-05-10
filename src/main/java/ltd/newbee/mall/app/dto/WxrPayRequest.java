@@ -9,6 +9,8 @@ public class WxrPayRequest {
 
     private String orderNo;
 
+    private String code;
+
     public String getToken() {
         return token;
     }
@@ -23,5 +25,13 @@ public class WxrPayRequest {
 
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

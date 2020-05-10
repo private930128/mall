@@ -24,12 +24,15 @@ import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.config.redis.RedisUtil;
 import ltd.newbee.mall.config.wxpay.WxPayConfig;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
+import ltd.newbee.mall.controller.vo.WechatAuthCodeResponseVO;
 import ltd.newbee.mall.dao.MallUserMapper;
 import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.entity.NewBeeMallOrder;
 import ltd.newbee.mall.entity.PaymentJournal;
+import ltd.newbee.mall.properties.WechatAuthProperties;
 import ltd.newbee.mall.service.NewBeeMallOrderService;
 import ltd.newbee.mall.service.PaymentService;
+import ltd.newbee.mall.service.fegin.WeChatApiService;
 import ltd.newbee.mall.util.DateUtil;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
@@ -58,6 +61,12 @@ public class PaymentController {
 
     @Autowired
     private MallUserMapper mallUserMapper;
+
+    @Autowired
+    private WeChatApiService weChatApiService;
+
+    @Autowired
+    private WechatAuthProperties wechatAuthProperties;
 
     @PostMapping("/save")
     public Result save() {
@@ -161,6 +170,23 @@ public class PaymentController {
             return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_NOT_EXIST.getCode(), ResultMsgEnum.ORDER_NOT_EXIST.getMsg());
         } else {
             map = paymentService.paywxr(openId, orderNo);
+        }
+        return ResultGenerator.genSuccessDateResult(map);
+    }
+
+    @PostMapping("h5/wxrPay")
+    @ResponseBody
+    public Result h5WxrPay(@RequestBody WxrPayRequest wxrPayRequest) {
+
+        Map<String, Object> map;
+        String orderNo = wxrPayRequest.getOrderNo();
+        NewBeeMallOrder order = newBeeMallOrderService.getNewBeeMallOrderByOrderNo(orderNo);
+        if (PayStatusEnum.PAY_SUCCESS.getPayStatus() == order.getPayStatus()) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_PAID_ERROR.getCode(), ResultMsgEnum.ORDER_PAID_ERROR.getMsg());
+        } else if (order == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_NOT_EXIST.getCode(), ResultMsgEnum.ORDER_NOT_EXIST.getMsg());
+        } else {
+            map = paymentService.h5Paywxr(orderNo);
         }
         return ResultGenerator.genSuccessDateResult(map);
     }

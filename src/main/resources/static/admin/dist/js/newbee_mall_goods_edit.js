@@ -40,6 +40,44 @@ $(function () {
     });
 });
 
+$('#Upload').click(function () {
+    var formData = new FormData($('form')[1]);
+    $.ajax({
+        url: 'http://up.imgapi.com/',
+        type: 'POST',
+        xhr: function () {
+            myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener('progress', progressHandlingFunction, false);
+            }
+            return myXhr;
+        },
+        beforeSend: function () {
+            $('progress').show();
+        },
+        success: function (data) {
+            // console.log(data);
+            // $('#res').html(JSON.stringify(data));
+            alert("上传成功");
+            $("#goodsCoverImg").attr("src", data.linkurl);
+            $("#goodsCoverImg").attr("style", "width: 128px;height: 128px;display:block;");
+            //window.location.reload();
+        },
+        error: function (data) {
+            console.log(data);
+        },
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+});
+function progressHandlingFunction(e) {
+    if (e.lengthComputable) {
+        $('progress').attr({value: e.loaded, max: e.total});
+    }
+}
+
 $('#confirmButton').click(function () {
     var goodsName = $('#goodsName').val();
     var tag = $('#tag').val();

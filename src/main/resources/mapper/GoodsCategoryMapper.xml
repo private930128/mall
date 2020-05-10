@@ -215,5 +215,6 @@
         <include refid="Base_Column_List"/>
         from tb_newbee_mall_goods_category
         where is_deleted = 0
+        and category_level = 3
     </select>
 </mapper>

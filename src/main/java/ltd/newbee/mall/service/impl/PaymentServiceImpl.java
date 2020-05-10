@@ -336,7 +336,7 @@ public class PaymentServiceImpl implements PaymentService {
                 String mweb_url = (String) map.get("mweb_url");// 返回的预付单信息
                 response.put("nonceStr", nonce_str);
                 response.put("package", "prepay_id=" + prepay_id);
-                response.put("mweb_url", mweb_url);
+                response.put("mweb_url", mweb_url + "&redirect_url=" + "http%3A%2F%2Fwww.e-gouwu.com//#/orderDetail/" + orderNo);
                 response.put("Referer", "http://www.e-gouwu.com/");
                 Long timeStamp = System.currentTimeMillis() / 1000;
                 response.put("timeStamp", timeStamp + "");// 这边要将返回的时间戳转化成字符串，不然小程序端调用wx.requestPayment方法会报签名错误

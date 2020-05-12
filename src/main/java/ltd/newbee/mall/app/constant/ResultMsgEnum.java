@@ -13,6 +13,7 @@ public enum ResultMsgEnum {
     REGISTRY_PASSWORD_CONFIRM_ERROR(1006, "两次密码输入不一致"),
     USER_EXIST(1007, "用户已存在,请登录"),
     PASSWORD_ERROR(1008, "密码错误,请重试"),
+    PASSWORD_NOT_SET_ERROR(1009, "您的账号未设置密码,请重新注册设置密码"),
 
     ORDER_PAID_ERROR(2001, "订单已支付，请不要重复操作"),
     ORDER_NOT_EXIST(2002, "该订单不存在!!"),

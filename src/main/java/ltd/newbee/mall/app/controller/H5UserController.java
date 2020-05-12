@@ -36,7 +36,7 @@ public class H5UserController {
 
     @RequestMapping(value = "/registry", method = RequestMethod.POST)
     @ResponseBody
-    public Result registry(@RequestBody UserRegistryDto userRegistryDto) {
+    public Result registry(@RequestBody UserRegistryDto userRegistryDto, HttpServletRequest request) {
         try {
             logger.info("registry param : userRegistryDto = {}", JSON.toJSON(userRegistryDto));
             if (StringUtils.isEmpty(userRegistryDto.getPhone()) || StringUtils.isEmpty(userRegistryDto.getVerCode())) {
@@ -59,21 +59,31 @@ public class H5UserController {
             }
             MallUser mallUser = mallUserMapper.selectByLoginName(userRegistryDto.getPhone());
             if (mallUser != null) {
-                return ResultGenerator.genErrorResult(ResultMsgEnum.USER_EXIST.getCode(), ResultMsgEnum.USER_EXIST.getMsg());
+                MallUser user = new MallUser();
+                user.setUserId(mallUser.getUserId());
+                user.setPasswordMd5(userRegistryDto.getPassword());
+                mallUserMapper.updateByPrimaryKeySelective(user);
+                logger.info("registry2 response user = {}", JSON.toJSON(user));
+            } else {
+                MallUser user = new MallUser();
+                user.setLoginName(userRegistryDto.getPhone());
+                user.setPasswordMd5(userRegistryDto.getPassword());
+                user.setAddress(userRegistryDto.getAddress());
+                user.setCreateTime(new Date());
+                user.setCode(userRegistryDto.getCode());
+                user.setNickName("");
+                user.setIntroduceSign("");
+                user.setIsDeleted((byte) 0);
+                user.setLockedFlag((byte) 0);
+                user.setWechatOpenid("");
+                mallUserMapper.insert(user);
+                logger.info("registry response user = {}", JSON.toJSON(user));
             }
-            MallUser user = new MallUser();
-            user.setLoginName(userRegistryDto.getPhone());
-            user.setPasswordMd5(userRegistryDto.getPassword());
-            user.setAddress(userRegistryDto.getAddress());
-            user.setCreateTime(new Date());
-            user.setCode(userRegistryDto.getCode());
-            user.setNickName("");
-            user.setIntroduceSign("");
-            user.setIsDeleted((byte) 0);
-            user.setLockedFlag((byte) 0);
-            user.setWechatOpenid("");
-            mallUserMapper.insert(user);
-            logger.info("registry response user = {}", JSON.toJSON(user));
+            MallUser mallUser2 = mallUserMapper.selectByLoginName(userRegistryDto.getPhone());
+            logger.info("registry set session user = {}", JSON.toJSON(mallUser2));
+            request.getSession().setAttribute("loginUserId", mallUser2.getUserId());
+            request.getSession().setMaxInactiveInterval(60 * 60 * 2);
+            logger.info("registry response user12312321 = {}", request.getSession().getAttribute("loginUserId"));
             return ResultGenerator.genSuccessResult();
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,6 +99,9 @@ public class H5UserController {
             MallUser mallUser = mallUserMapper.selectByLoginName(user.getLoginName());
             if (mallUser == null) {
                 return ResultGenerator.genErrorResult(ResultMsgEnum.USER_NOT_EXIST.getCode(), ResultMsgEnum.USER_NOT_EXIST.getMsg());
+            }
+            if (StringUtils.isEmpty(mallUser.getPasswordMd5())) {
+                return ResultGenerator.genErrorResult(ResultMsgEnum.PASSWORD_NOT_SET_ERROR.getCode(), ResultMsgEnum.PASSWORD_NOT_SET_ERROR.getMsg());
             }
             if (!user.getPassword().equals(mallUser.getPasswordMd5())) {
                 return ResultGenerator.genErrorResult(ResultMsgEnum.PASSWORD_ERROR.getCode(), ResultMsgEnum.PASSWORD_ERROR.getMsg());

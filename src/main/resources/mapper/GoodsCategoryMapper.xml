@@ -216,5 +216,6 @@
         from tb_newbee_mall_goods_category
         where is_deleted = 0
         and category_level = 3
+        order by category_rank desc
     </select>
 </mapper>

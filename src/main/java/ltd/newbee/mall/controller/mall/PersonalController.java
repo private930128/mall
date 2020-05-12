@@ -59,6 +59,11 @@ public class PersonalController {
         return "mall/addresses";
     }
 
+    @GetMapping({"/h5/index", "h5index.html"})
+    public String h5index() {
+        return "admin/h5index";
+    }
+
     @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestParam("loginName") String loginName,

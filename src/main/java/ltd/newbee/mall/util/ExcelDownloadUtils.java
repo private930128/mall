@@ -33,7 +33,7 @@ public class ExcelDownloadUtils {
 
     private static final int HEADER_ROW = 0;
 
-    private static final String[] HEAD_LIST = new String[]{"订单号", "商品编号", "商品名称", "供应商报价", "商品数量", "收货人姓名", "收货人地址", "下单时间", "配送单编号", "配送单状态"};
+    private static final String[] HEAD_LIST = new String[]{"订单号", "商品编号", "商品名称", "供应商报价", "商品数量", "收货人姓名", "收货人电话", "收货人地址", "下单时间", "配送单编号", "配送单状态"};
 
     @Resource
     private NewBeeMallOrderManager mallOrderManager;
@@ -95,7 +95,9 @@ public class ExcelDownloadUtils {
                     HSSFCell fen7 = row1.createCell((short) 6);   //--->创建一个单元格
                     fen7.setCellValue(newBeeMallOrderListVO.getPhone());
                     HSSFCell fen8 = row1.createCell((short) 7);   //--->创建一个单元格
-                    fen8.setCellValue(newBeeMallOrderListVO.getCreateTime());
+                    fen8.setCellValue(newBeeMallOrderListVO.getUserAddress());
+                    HSSFCell fen9 = row1.createCell((short) 8);   //--->创建一个单元格
+                    fen9.setCellValue(newBeeMallOrderListVO.getCreateTime());
                     index++;
                 }
 

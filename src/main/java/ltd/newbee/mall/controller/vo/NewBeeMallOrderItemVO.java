@@ -17,6 +17,8 @@ public class NewBeeMallOrderItemVO implements Serializable {
 
     private String sellingPrice;
 
+    private String originalPrice;
+
     public Long getGoodsId() {
         return goodsId;
     }
@@ -55,5 +57,13 @@ public class NewBeeMallOrderItemVO implements Serializable {
 
     public void setGoodsCount(Integer goodsCount) {
         this.goodsCount = goodsCount;
+    }
+
+    public String getOriginalPrice() {
+        return originalPrice;
+    }
+
+    public void setOriginalPrice(String originalPrice) {
+        this.originalPrice = originalPrice;
     }
 }

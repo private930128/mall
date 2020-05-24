@@ -23,6 +23,8 @@ public class AppGoodsInfoDto {
 
     private String tag;
 
+    private String goodsDetailContent;
+
     public Long getGoodsId() {
         return goodsId;
     }
@@ -77,5 +79,13 @@ public class AppGoodsInfoDto {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getGoodsDetailContent() {
+        return goodsDetailContent;
+    }
+
+    public void setGoodsDetailContent(String goodsDetailContent) {
+        this.goodsDetailContent = goodsDetailContent;
     }
 }

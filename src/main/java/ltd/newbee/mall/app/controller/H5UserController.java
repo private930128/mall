@@ -54,14 +54,21 @@ public class H5UserController {
 //            if (!verCodeFromRedis.equals(userRegistryDto.getVerCode())) {
 //                return ResultGenerator.genErrorResult(ResultMsgEnum.VERIFICATION_CODE_ERROR.getCode(), ResultMsgEnum.VERIFICATION_CODE_ERROR.getMsg());
 //            }
+            if (StringUtils.isEmpty(userRegistryDto.getPassword()) || StringUtils.isEmpty(userRegistryDto.getConfirmPassword())) {
+                return ResultGenerator.genErrorResult(ResultMsgEnum.PASSWORD_IS_NULL.getCode(), ResultMsgEnum.PASSWORD_IS_NULL.getMsg());
+            }
             if (!userRegistryDto.getPassword().equals(userRegistryDto.getConfirmPassword())) {
                 return ResultGenerator.genErrorResult(ResultMsgEnum.REGISTRY_PASSWORD_CONFIRM_ERROR.getCode(), ResultMsgEnum.REGISTRY_PASSWORD_CONFIRM_ERROR.getMsg());
+            }
+            if (StringUtils.isEmpty(userRegistryDto.getRecipientName())) {
+                return ResultGenerator.genErrorResult(ResultMsgEnum.RECIPIENT_IS_NULL.getCode(), ResultMsgEnum.RECIPIENT_IS_NULL.getMsg());
             }
             MallUser mallUser = mallUserMapper.selectByLoginName(userRegistryDto.getPhone());
             if (mallUser != null) {
                 MallUser user = new MallUser();
                 user.setUserId(mallUser.getUserId());
                 user.setPasswordMd5(userRegistryDto.getPassword());
+                user.setAddress(userRegistryDto.getAddress());
                 mallUserMapper.updateByPrimaryKeySelective(user);
                 logger.info("registry2 response user = {}", JSON.toJSON(user));
             } else {
@@ -71,7 +78,7 @@ public class H5UserController {
                 user.setAddress(userRegistryDto.getAddress());
                 user.setCreateTime(new Date());
                 user.setCode(userRegistryDto.getCode());
-                user.setNickName("");
+                user.setNickName(userRegistryDto.getRecipientName());
                 user.setIntroduceSign("");
                 user.setIsDeleted((byte) 0);
                 user.setLockedFlag((byte) 0);

@@ -43,4 +43,6 @@ public interface NewBeeMallGoodsMapper {
 
     NewBeeMallGoods selectById(@Param("goodsId") Long goodsId);
 
+    List<NewBeeMallGoods> selectOriginalPriByIdList(@Param("goodsIds") List<Long> goodsIds);
+
 }

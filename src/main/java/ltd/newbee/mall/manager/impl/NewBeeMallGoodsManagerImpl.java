@@ -63,6 +63,7 @@ public class NewBeeMallGoodsManagerImpl implements NewBeeMallGoodsManager {
         appGoodsInfoDto.setGoodsCategoryId(newBeeMallGoods.getGoodsCategoryId());
         appGoodsInfoDto.setGoodsIntro(newBeeMallGoods.getGoodsIntro());
         appGoodsInfoDto.setTag(newBeeMallGoods.getTag());
+        appGoodsInfoDto.setGoodsDetailContent(newBeeMallGoods.getGoodsDetailContent());
         return appGoodsInfoDto;
     }
 }

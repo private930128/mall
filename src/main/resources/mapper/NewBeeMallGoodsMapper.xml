@@ -399,4 +399,13 @@
         where goods_id = #{goodsId}
         and goods_sell_status = 0
     </select>
+
+    <select id="selectOriginalPriByIdList" resultMap="ResultMapWithBLOBs" parameterType="java.util.List">
+        select goods_id, original_price
+        from tb_newbee_mall_goods_info
+        where goods_id IN
+        <foreach collection="goodsIds" index="index" item="item" separator="," open="(" close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+    </select>
 </mapper>

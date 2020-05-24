@@ -1,11 +1,10 @@
 package ltd.newbee.mall.manager.impl;
 
+import com.google.common.collect.Lists;
 import ltd.newbee.mall.common.*;
 import ltd.newbee.mall.controller.vo.*;
-import ltd.newbee.mall.dao.NewBeeMallGoodsMapper;
-import ltd.newbee.mall.dao.NewBeeMallOrderItemMapper;
-import ltd.newbee.mall.dao.NewBeeMallOrderMapper;
-import ltd.newbee.mall.dao.NewBeeMallShoppingCartItemMapper;
+import ltd.newbee.mall.dao.*;
+import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.entity.NewBeeMallGoods;
 import ltd.newbee.mall.entity.NewBeeMallOrder;
 import ltd.newbee.mall.entity.NewBeeMallOrderItem;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -37,6 +37,9 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     private NewBeeMallShoppingCartItemMapper newBeeMallShoppingCartItemMapper;
     @Autowired
     private NewBeeMallGoodsMapper newBeeMallGoodsMapper;
+
+    @Resource
+    private MallUserMapper mallUserMapper;
 
     @Override
     public String createOrder(NewBeeMallUserVO user, List<NewBeeMallShoppingCartItemVO> myShoppingCartItems) {
@@ -228,13 +231,35 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     @Override
     public List<NewBeeMallOrderListVO> getOrdersByExport(PageQueryUtil pageUtil) {
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<NewBeeMallOrder> newBeeMallOrders = newBeeMallOrderMapper.findNewBeeMallOrderListByExport(pageUtil);
         List<NewBeeMallOrderListVO> orderListVOS = new ArrayList<>();
+        List<Long> userIds = newBeeMallOrders.stream().map(NewBeeMallOrder::getUserId).distinct().collect(Collectors.toList());
         //数据转换 将实体类转成vo
-        orderListVOS = BeanUtil.copyList(newBeeMallOrders, NewBeeMallOrderListVO.class);
-        //设置订单状态中文显示值
+        for (NewBeeMallOrder newBeeMallOrder : newBeeMallOrders) {
+            NewBeeMallOrderListVO newBeeMallOrderListVO = new NewBeeMallOrderListVO();
+            newBeeMallOrderListVO.setOrderId(newBeeMallOrder.getOrderId());
+            newBeeMallOrderListVO.setOrderNo(newBeeMallOrder.getOrderNo());
+            newBeeMallOrderListVO.setUserAddress(newBeeMallOrder.getUserAddress());
+            newBeeMallOrderListVO.setUserId(newBeeMallOrder.getUserId());
+            newBeeMallOrderListVO.setOrderStatus(newBeeMallOrder.getOrderStatus());
+            if (newBeeMallOrder.getPayTime() != null) {
+                newBeeMallOrderListVO.setCreateTime(simpleDateFormat.format(newBeeMallOrder.getCreateTime()));
+            }
+            orderListVOS.add(newBeeMallOrderListVO);
+        }
+        // 查询用户信息
+        List<MallUser> userList = mallUserMapper.lisMallUserByIds(userIds);
+        Map<Long, MallUser> userMap = userList.stream().collect(Collectors.toMap(MallUser::getUserId, it -> it));
+
+        //设置订单状态中文显示值 && 设置用户信息
         for (NewBeeMallOrderListVO newBeeMallOrderListVO : orderListVOS) {
             newBeeMallOrderListVO.setOrderStatusString(NewBeeMallOrderStatusEnum.getNewBeeMallOrderStatusEnumByStatus(newBeeMallOrderListVO.getOrderStatus()).getName());
+            if (userMap.containsKey(newBeeMallOrderListVO.getUserId())) {
+                MallUser mallUser = userMap.get(newBeeMallOrderListVO.getUserId());
+                newBeeMallOrderListVO.setPhone(mallUser.getLoginName());
+                newBeeMallOrderListVO.setRecipient(mallUser.getNickName());
+            }
         }
         List<Long> orderIds = newBeeMallOrders.stream().map(NewBeeMallOrder::getOrderId).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(orderIds)) {
@@ -246,6 +271,15 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
                     List<NewBeeMallOrderItem> orderItemListTemp = itemByOrderIdMap.get(newBeeMallOrderListVO.getOrderId());
                     //将NewBeeMallOrderItem对象列表转换成NewBeeMallOrderItemVO对象列表
                     List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS = BeanUtil.copyList(orderItemListTemp, NewBeeMallOrderItemVO.class);
+                    List<Long> goodsIdList = newBeeMallOrderItemVOS.stream().map(NewBeeMallOrderItemVO::getGoodsId).distinct().collect(Collectors.toList());
+                    List<NewBeeMallGoods> newBeeMallGoodsList = newBeeMallGoodsMapper.selectOriginalPriByIdList(goodsIdList);
+                    Map<Long, Integer> priceMap = newBeeMallGoodsList.stream().collect(Collectors.toMap(NewBeeMallGoods::getGoodsId, it -> it.getOriginalPrice()));
+                    for (NewBeeMallOrderItemVO newBeeMallOrderItemVO : newBeeMallOrderItemVOS) {
+                        if (priceMap.containsKey(newBeeMallOrderItemVO.getGoodsId())) {
+                            Integer originalPrice = priceMap.get(newBeeMallOrderItemVO.getGoodsId());
+                            newBeeMallOrderItemVO.setOriginalPrice(new BigDecimal(originalPrice).divide(new BigDecimal(100)).toString());
+                        }
+                    }
                     newBeeMallOrderListVO.setNewBeeMallOrderItemVOS(newBeeMallOrderItemVOS);
                 }
             }

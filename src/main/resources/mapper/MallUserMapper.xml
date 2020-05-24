@@ -199,4 +199,16 @@
         from tb_newbee_mall_user
         where wechat_openid = #{openId}
     </select>
+
+    <select id="lisMallUserByIds" parameterType="java.util.List" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_newbee_mall_user
+        where 1=1
+        and user_id in
+        <foreach collection="userIds" index="index" item="item" separator="," open="(" close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+        order by create_time desc
+    </select>
 </mapper>

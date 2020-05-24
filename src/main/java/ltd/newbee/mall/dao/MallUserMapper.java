@@ -30,4 +30,6 @@ public interface MallUserMapper {
     int lockUserBatch(@Param("ids") Integer[] ids, @Param("lockStatus") int lockStatus);
 
     List<MallUser> selectByOpenId(@Param("openId") String openId);
+
+    List<MallUser> lisMallUserByIds(@Param("userIds") List<Long> userIds);
 }

@@ -14,6 +14,9 @@ public enum ResultMsgEnum {
     USER_EXIST(1007, "用户已存在,请登录"),
     PASSWORD_ERROR(1008, "密码错误,请重试"),
     PASSWORD_NOT_SET_ERROR(1009, "您的账号未设置密码,请重新注册设置密码"),
+    PASSWORD_IS_NULL(1010, "输入密码为空"),
+    RECIPIENT_IS_NULL(1011, "收件人姓名为空"),
+
 
     ORDER_PAID_ERROR(2001, "订单已支付，请不要重复操作"),
     ORDER_NOT_EXIST(2002, "该订单不存在!!"),

@@ -1,5 +1,6 @@
 package ltd.newbee.mall.util;
 
+import com.alibaba.fastjson.JSON;
 import ltd.newbee.mall.controller.vo.NewBeeMallOrderItemVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallOrderListVO;
 import ltd.newbee.mall.manager.NewBeeMallOrderManager;
@@ -23,10 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ExcelDownloadUtils {
@@ -35,7 +33,7 @@ public class ExcelDownloadUtils {
 
     private static final int HEADER_ROW = 0;
 
-    private static final String[] HEAD_LIST = new String[]{"订单号", "商品编号", "商品名称", "供应商报价", "商品数量", "下单时间", "收货人地址", "配送单编号", "配送单状态"};
+    private static final String[] HEAD_LIST = new String[]{"订单号", "商品编号", "商品名称", "供应商报价", "商品数量", "收货人姓名", "收货人地址", "下单时间", "配送单编号", "配送单状态"};
 
     @Resource
     private NewBeeMallOrderManager mallOrderManager;
@@ -48,6 +46,9 @@ public class ExcelDownloadUtils {
     private void excelProcess(HttpServletResponse response, String[] headList) {
 
         response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-disposition",
+                "attachment; filename=" + new Date().getTime() + ".xls");
+        response.setCharacterEncoding("utf-8");
         OutputStream os = null;
         HSSFWorkbook wb = null;
         try {
@@ -70,9 +71,14 @@ public class ExcelDownloadUtils {
 //            params.put("channelId",1);
             PageQueryUtil pageQueryUtil = new PageQueryUtil(params);
             List<NewBeeMallOrderListVO> list = mallOrderManager.getOrdersByExport(pageQueryUtil);
+            LOGGER.info("download list = {}", JSON.toJSON(list));
             int index = 1;
             for (NewBeeMallOrderListVO newBeeMallOrderListVO : list) {
+                if (newBeeMallOrderListVO.getOrderStatus() != (byte) 1) {
+                    continue;
+                }
                 for (NewBeeMallOrderItemVO mallOrderItemVO : newBeeMallOrderListVO.getNewBeeMallOrderItemVOS()) {
+                    LOGGER.info("download mallOrderItemVO = {}", JSON.toJSON(mallOrderItemVO));
                     HSSFRow row1 = sheet.createRow(index);
                     HSSFCell fen = row1.createCell((short) 0);   //--->创建一个单元格
                     fen.setCellValue(newBeeMallOrderListVO.getOrderId());
@@ -81,14 +87,16 @@ public class ExcelDownloadUtils {
                     HSSFCell fen3 = row1.createCell((short) 2);   //--->创建一个单元格
                     fen3.setCellValue(mallOrderItemVO.getGoodsName());
                     HSSFCell fen4 = row1.createCell((short) 3);   //--->创建一个单元格
-                    fen4.setCellValue(mallOrderItemVO.getSellingPrice());
+                    fen4.setCellValue(mallOrderItemVO.getOriginalPrice());
                     HSSFCell fen5 = row1.createCell((short) 4);   //--->创建一个单元格
                     fen5.setCellValue(mallOrderItemVO.getGoodsCount());
                     HSSFCell fen6 = row1.createCell((short) 5);   //--->创建一个单元格
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                    fen6.setCellValue(simpleDateFormat.format(newBeeMallOrderListVO.getCreateTime()));
+                    fen6.setCellValue(newBeeMallOrderListVO.getRecipient());
                     HSSFCell fen7 = row1.createCell((short) 6);   //--->创建一个单元格
-                    fen7.setCellValue(newBeeMallOrderListVO.getUserAddress());
+                    fen7.setCellValue(newBeeMallOrderListVO.getPhone());
+                    HSSFCell fen8 = row1.createCell((short) 7);   //--->创建一个单元格
+                    fen8.setCellValue(newBeeMallOrderListVO.getCreateTime());
+                    index++;
                 }
 
             }

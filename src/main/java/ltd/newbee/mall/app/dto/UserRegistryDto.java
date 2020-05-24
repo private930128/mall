@@ -17,6 +17,8 @@ public class UserRegistryDto {
 
     private String confirmPassword;
 
+    private String recipientName;
+
     public String getPhone() {
         return phone;
     }
@@ -63,5 +65,13 @@ public class UserRegistryDto {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
     }
 }

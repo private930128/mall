@@ -29,6 +29,12 @@ public class NewBeeMallOrderListVO implements Serializable {
 
     private List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS;
 
+    private Long userId;
+
+    private String recipient;
+
+    private String phone;
+
     public Long getOrderId() {
         return orderId;
     }
@@ -107,5 +113,29 @@ public class NewBeeMallOrderListVO implements Serializable {
 
     public void setNewBeeMallOrderItemVOS(List<NewBeeMallOrderItemVO> newBeeMallOrderItemVOS) {
         this.newBeeMallOrderItemVOS = newBeeMallOrderItemVOS;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

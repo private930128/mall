@@ -21,7 +21,7 @@ public class Constants {
     public final static int INDEX_GOODS_NEW_NUMBER = 5;//首页新品数量
     public final static int INDEX_GOODS_RECOMMOND_NUMBER = 10;//首页推荐商品数量
 
-    public final static int SHOPPING_CART_ITEM_TOTAL_NUMBER = 13;//购物车中商品的最大数量(可根据自身需求修改)
+    public final static int SHOPPING_CART_ITEM_TOTAL_NUMBER = 200;//购物车中商品的最大数量(可根据自身需求修改)
 
     public final static int SHOPPING_CART_ITEM_LIMIT_NUMBER = 5;//购物车中单个商品的最大购买数量(可根据自身需求修改)
 

@@ -18,6 +18,8 @@ public interface NewBeeMallShoppingCartItemMapper {
 
     List<NewBeeMallShoppingCartItem> selectByUserId(@Param("newBeeMallUserId") Long newBeeMallUserId, @Param("number") int number);
 
+    List<NewBeeMallShoppingCartItem> getCartByIds(@Param("ids") List<Long> ids);
+
     int selectCountByUserId(Long newBeeMallUserId);
 
     int updateByPrimaryKeySelective(NewBeeMallShoppingCartItem record);
@@ -25,4 +27,6 @@ public interface NewBeeMallShoppingCartItemMapper {
     int updateByPrimaryKey(NewBeeMallShoppingCartItem record);
 
     int deleteBatch(List<Long> ids);
+
+    int clearCart(Long userId);
 }

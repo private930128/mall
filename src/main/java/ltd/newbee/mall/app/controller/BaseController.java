@@ -22,13 +22,12 @@ public abstract class BaseController {
     private RedisUtil redisUtil;
 
     protected MallUser getMallUser(String token) {
-        /*Object object = redisUtil.get(token);
+        Object object = redisUtil.get(token);
         log.info("BaseController getMallUser getOpenId : object = {}", object);
         if (object == null) {
             return null;
-        }*/
-        String openId = token;
-//        String openId = object.toString();
+        }
+        String openId = object.toString();
         if (StringUtils.isEmpty(openId)) {
             return null;
         }

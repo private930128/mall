@@ -15,6 +15,8 @@ public class AddressRequestDto {
 
     private String address;
 
+    private Integer defaultStatus;
+
     public String getToken() {
         return token;
     }
@@ -53,5 +55,13 @@ public class AddressRequestDto {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Integer getDefaultStatus() {
+        return defaultStatus;
+    }
+
+    public void setDefaultStatus(Integer defaultStatus) {
+        this.defaultStatus = defaultStatus;
     }
 }

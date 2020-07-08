@@ -1,13 +1,11 @@
 package ltd.newbee.mall.manager.impl;
 
 import com.google.common.collect.Lists;
+import ltd.newbee.mall.app.dto.CreateOrderRequest;
 import ltd.newbee.mall.common.*;
 import ltd.newbee.mall.controller.vo.*;
 import ltd.newbee.mall.dao.*;
-import ltd.newbee.mall.entity.MallUser;
-import ltd.newbee.mall.entity.NewBeeMallGoods;
-import ltd.newbee.mall.entity.NewBeeMallOrder;
-import ltd.newbee.mall.entity.NewBeeMallOrderItem;
+import ltd.newbee.mall.entity.*;
 import ltd.newbee.mall.manager.NewBeeMallOrderManager;
 import ltd.newbee.mall.util.BeanUtil;
 import ltd.newbee.mall.util.NumberUtil;
@@ -42,8 +40,16 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
     private MallUserMapper mallUserMapper;
 
     @Override
-    public String createOrder(NewBeeMallUserVO user, List<NewBeeMallShoppingCartItemVO> myShoppingCartItems) {
-        List<Long> goodsIds = myShoppingCartItems.stream().map(NewBeeMallShoppingCartItemVO::getGoodsId).collect(Collectors.toList());
+    public String createOrder(NewBeeMallUserVO user, CreateOrderRequest createOrderRequest) {
+
+        List<NewBeeMallShoppingCartItem> myShoppingCartItems;
+        if (createOrderRequest.getFromType() == 1) {
+            myShoppingCartItems = newBeeMallShoppingCartItemMapper.getCartByIds(createOrderRequest.getCartItemIdList());
+        } else {
+            List<NewBeeMallShoppingCartItemVO> list = createOrderRequest.getGoodsInfo();
+            myShoppingCartItems = BeanUtil.copyList(list, NewBeeMallShoppingCartItem.class);
+        }
+        List<Long> goodsIds = myShoppingCartItems.stream().map(NewBeeMallShoppingCartItem::getGoodsId).collect(Collectors.toList());
 
         List<NewBeeMallGoods> newBeeMallGoods = newBeeMallGoodsMapper.selectByPrimaryKeys(goodsIds);
         Map<Long, NewBeeMallGoods> goodsMap = new HashMap<>();
@@ -58,11 +64,14 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             NewBeeMallOrder newBeeMallOrder = new NewBeeMallOrder();
             newBeeMallOrder.setOrderNo(orderNo);
             newBeeMallOrder.setUserId(user.getUserId());
-            newBeeMallOrder.setUserAddress(user.getAddress());
+            newBeeMallOrder.setUserAddress(createOrderRequest.getAddress());
+            newBeeMallOrder.setUserName(createOrderRequest.getConsigneeName());
+            newBeeMallOrder.setUserPhone(createOrderRequest.getPhone());
+            newBeeMallOrder.setUserAddress(createOrderRequest.getAddress());
             //总价
-            for (NewBeeMallShoppingCartItemVO newBeeMallShoppingCartItemVO : myShoppingCartItems) {
-                Integer price = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getSellingPrice();
-                priceTotal += newBeeMallShoppingCartItemVO.getGoodsCount() * price;
+            for (NewBeeMallShoppingCartItem newBeeMallShoppingCartItem : myShoppingCartItems) {
+                Integer price = goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()).getSellingPrice();
+                priceTotal += newBeeMallShoppingCartItem.getGoodsCount() * price;
             }
             if (priceTotal < 1) {
                 NewBeeMallException.fail(ServiceResultEnum.ORDER_PRICE_ERROR.getResult());
@@ -78,19 +87,23 @@ public class NewBeeMallOrderManagerImpl implements NewBeeMallOrderManager {
             //生成所有的订单项快照，并保存至数据库
             List<NewBeeMallOrderItem> newBeeMallOrderItems = new ArrayList<>();
             Long orderId = newBeeMallOrder.getOrderId();
-            for (NewBeeMallShoppingCartItemVO newBeeMallShoppingCartItemVO : myShoppingCartItems) {
+            for (NewBeeMallShoppingCartItem newBeeMallShoppingCartItem : myShoppingCartItems) {
                 NewBeeMallOrderItem newBeeMallOrderItem = new NewBeeMallOrderItem();
-                BeanUtil.copyProperties(newBeeMallShoppingCartItemVO, newBeeMallOrderItem);
-                Integer price = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getSellingPrice();
-                String goodName = goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getGoodsName();
+                BeanUtil.copyProperties(newBeeMallShoppingCartItem, newBeeMallOrderItem);
+                Integer price = goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()) == null ? 1 : goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()).getSellingPrice();
+                String goodName = goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()).getGoodsName();
                 newBeeMallOrderItem.setSellingPrice(price);
                 newBeeMallOrderItem.setOrderId(orderId);
                 newBeeMallOrderItem.setGoodsName(goodName);
-                newBeeMallOrderItem.setGoodsCoverImg(goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItemVO.getGoodsId()).getGoodsCoverImg());
+                newBeeMallOrderItem.setGoodsCoverImg(goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()) == null ? "" : goodsMap.get(newBeeMallShoppingCartItem.getGoodsId()).getGoodsCoverImg());
                 newBeeMallOrderItems.add(newBeeMallOrderItem);
             }
             //保存至数据库
             newBeeMallOrderItemMapper.insertBatch(newBeeMallOrderItems);
+            // 删除购物车
+            if (createOrderRequest.getFromType() == 1) {
+                newBeeMallShoppingCartItemMapper.deleteBatch(createOrderRequest.getCartItemIdList());
+            }
             //所有操作成功后，将订单号返回，以供Controller方法跳转到订单详情
             return orderNo;
 

@@ -87,17 +87,14 @@ public class AppUserController {
             if (!userRegistryDto.getPassword().equals(userRegistryDto.getConfirmPassword())) {
                 return ResultGenerator.genErrorResult(ResultMsgEnum.REGISTRY_PASSWORD_CONFIRM_ERROR.getCode(), ResultMsgEnum.REGISTRY_PASSWORD_CONFIRM_ERROR.getMsg());
             }
-            if (StringUtils.isEmpty(userRegistryDto.getRecipientName())) {
-                return ResultGenerator.genErrorResult(ResultMsgEnum.RECIPIENT_IS_NULL.getCode(), ResultMsgEnum.RECIPIENT_IS_NULL.getMsg());
-            }
 
             MallUser user = new MallUser();
             user.setLoginName(userRegistryDto.getPhone());
             user.setPasswordMd5(userRegistryDto.getConfirmPassword());
-            user.setAddress(userRegistryDto.getAddress());
+            user.setAddress("");
             user.setCreateTime(new Date());
             user.setCode(userRegistryDto.getCode());
-            user.setNickName(userRegistryDto.getRecipientName());
+            user.setNickName("");
             user.setIntroduceSign("");
             user.setIsDeleted((byte) 0);
             user.setLockedFlag((byte) 0);

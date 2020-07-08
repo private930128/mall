@@ -7,8 +7,6 @@ public class UserRegistryDto {
 
     private String phone;
 
-    private String address;
-
     private String verCode;
 
     private String code;
@@ -17,22 +15,12 @@ public class UserRegistryDto {
 
     private String confirmPassword;
 
-    private String recipientName;
-
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getVerCode() {
@@ -65,13 +53,5 @@ public class UserRegistryDto {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
-    }
-
-    public String getRecipientName() {
-        return recipientName;
-    }
-
-    public void setRecipientName(String recipientName) {
-        this.recipientName = recipientName;
     }
 }

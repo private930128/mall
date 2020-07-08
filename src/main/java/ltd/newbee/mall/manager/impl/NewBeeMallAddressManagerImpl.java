@@ -4,6 +4,7 @@ import ltd.newbee.mall.common.DefaultAddressStatusEnum;
 import ltd.newbee.mall.entity.AddressManagement;
 import ltd.newbee.mall.manager.NewBeeMallAddressManager;
 import ltd.newbee.mall.service.AddressManagementService;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * Created by zhanghenan on 2020/6/13.
  */
+@Service
 public class NewBeeMallAddressManagerImpl implements NewBeeMallAddressManager {
 
     @Resource
@@ -28,11 +30,17 @@ public class NewBeeMallAddressManagerImpl implements NewBeeMallAddressManager {
 
     @Override
     public int saveAddressManagement(AddressManagement addressManagement) {
+        if (addressManagement.getDefaultStatus() == DefaultAddressStatusEnum.DEFAULT.getValue()) {
+            addressManagementService.setNotDefaultWhichIsDefault(addressManagement.getUserId());
+        }
         return addressManagementService.saveAddressManagement(addressManagement);
     }
 
     @Override
     public int updateAddressManagement(AddressManagement addressManagement) {
+        if (addressManagement.getDefaultStatus() == DefaultAddressStatusEnum.DEFAULT.getValue()) {
+            addressManagementService.setNotDefaultWhichIsDefault(addressManagement.getUserId());
+        }
         return addressManagementService.updateAddressManagement(addressManagement);
     }
 
@@ -42,5 +50,10 @@ public class NewBeeMallAddressManagerImpl implements NewBeeMallAddressManager {
         addressManagementService.setNotDefaultWhichIsDefault(userId);
         // 设置新的默认地址
         addressManagementService.setAddressDefaultOrNot(id, DefaultAddressStatusEnum.DEFAULT);
+    }
+
+    @Override
+    public AddressManagement getAddressInfoById(Long userId, Long id) {
+        return addressManagementService.getAddressInfoById(userId, id);
     }
 }

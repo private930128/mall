@@ -12,6 +12,9 @@ import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.manager.NewBeeMallAddressManager;
 import ltd.newbee.mall.util.Result;
 import ltd.newbee.mall.util.ResultGenerator;
+import ltd.newbee.mall.util.wxpay.PaymentControllerbak;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -40,6 +44,8 @@ public class AppAddressController {
     @Autowired
     private MallUserMapper mallUserMapper;
 
+    private static Logger logger = LoggerFactory.getLogger(AppAddressController.class);
+
     @RequestMapping(value = "/listAddress", method = RequestMethod.GET)
     @ResponseBody
     public Result listAddress(String token) {
@@ -59,7 +65,26 @@ public class AppAddressController {
         return ResultGenerator.genSuccessDateResult(newBeeMallAddressManager.listAddressInfoByUser(mallUserList.get(0).getUserId()));
     }
 
-    @RequestMapping(value = "/listAddress", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAddressById", method = RequestMethod.GET)
+    @ResponseBody
+    public Result getAddressById(String token, Long id) {
+        Object object = redisUtil.get(token);
+        if (object == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        String openId = object.toString();
+        if (StringUtils.isEmpty(openId)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+
+        return ResultGenerator.genSuccessDateResult(newBeeMallAddressManager.getAddressInfoById(mallUserList.get(0).getUserId(), id));
+    }
+
+    @RequestMapping(value = "/getDefaultAddress", method = RequestMethod.GET)
     @ResponseBody
     public Result getDefaultAddress(String token) {
         Object object = redisUtil.get(token);
@@ -92,11 +117,14 @@ public class AppAddressController {
         if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
+        logger.info("saveAddress addressRequestDto = {}", JSON.toJSON(addressRequestDto));
         AddressManagement addressManagement = new AddressManagement();
-        addressManagement.setAddress(addressManagement.getAddress());
-        addressManagement.setConsigneeName(addressManagement.getConsigneeName());
-        addressManagement.setPhone(addressManagement.getPhone());
+        addressManagement.setAddress(addressRequestDto.getAddress());
+        addressManagement.setConsigneeName(addressRequestDto.getConsigneeName());
+        addressManagement.setPhone(addressRequestDto.getPhone());
         addressManagement.setUserId(mallUserList.get(0).getUserId());
+        addressManagement.setDefaultStatus(addressRequestDto.getDefaultStatus());
+        logger.info("saveAddress addressManagement = {}", JSON.toJSON(addressManagement));
         return ResultGenerator.genSuccessDateResult(newBeeMallAddressManager.saveAddressManagement(addressManagement));
     }
 
@@ -116,10 +144,13 @@ public class AppAddressController {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
         AddressManagement addressManagement = new AddressManagement();
-        addressManagement.setAddress(addressManagement.getAddress());
-        addressManagement.setConsigneeName(addressManagement.getConsigneeName());
-        addressManagement.setPhone(addressManagement.getPhone());
+        addressManagement.setId(addressRequestDto.getId());
+        addressManagement.setAddress(addressRequestDto.getAddress());
+        addressManagement.setConsigneeName(addressRequestDto.getConsigneeName());
+        addressManagement.setPhone(addressRequestDto.getPhone());
         addressManagement.setUserId(mallUserList.get(0).getUserId());
+        addressManagement.setDefaultStatus(addressRequestDto.getDefaultStatus());
+        logger.info("updateAddress addressManagement = {}", JSON.toJSON(addressManagement));
         return ResultGenerator.genSuccessDateResult(newBeeMallAddressManager.updateAddressManagement(addressManagement));
     }
 

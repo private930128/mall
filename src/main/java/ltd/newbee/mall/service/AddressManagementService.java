@@ -21,4 +21,6 @@ public interface AddressManagementService {
     List<AddressManagement> listAddressManagementByUser(Long userId);
 
     boolean setNotDefaultWhichIsDefault(Long userId);
+
+    AddressManagement getAddressInfoById(Long userId, Long id);
 }

@@ -1,6 +1,7 @@
 package ltd.newbee.mall.controller.vo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 购物车页面购物项VO
@@ -18,6 +19,8 @@ public class NewBeeMallShoppingCartItemVO implements Serializable {
     private String goodsCoverImg;
 
     private Integer sellingPrice;
+
+    private BigDecimal realSellingPrice;
 
     public Long getGoodsId() {
         return goodsId;
@@ -65,5 +68,13 @@ public class NewBeeMallShoppingCartItemVO implements Serializable {
 
     public void setGoodsCount(Integer goodsCount) {
         this.goodsCount = goodsCount;
+    }
+
+    public BigDecimal getRealSellingPrice() {
+        return realSellingPrice;
+    }
+
+    public void setRealSellingPrice(BigDecimal realSellingPrice) {
+        this.realSellingPrice = realSellingPrice;
     }
 }

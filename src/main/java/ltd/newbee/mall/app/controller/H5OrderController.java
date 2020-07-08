@@ -63,7 +63,7 @@ public class H5OrderController {
         userVO.setUserId(mallUser.getUserId());
         userVO.setChannelId(1);
         userVO.setAddress(mallUser.getAddress());
-        String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest.getGoodsInfo());
+        String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest);
         return ResultGenerator.genSuccessDateResult(orderNo);
     }
 

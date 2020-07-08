@@ -1,5 +1,6 @@
 package ltd.newbee.mall.manager.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import ltd.newbee.mall.app.controller.AppAddressController;
 import ltd.newbee.mall.common.Constants;
 import ltd.newbee.mall.common.ServiceResultEnum;
 import ltd.newbee.mall.controller.vo.NewBeeMallShoppingCartItemVO;
@@ -17,6 +21,8 @@ import ltd.newbee.mall.entity.NewBeeMallGoods;
 import ltd.newbee.mall.entity.NewBeeMallShoppingCartItem;
 import ltd.newbee.mall.manager.NewBeeMallCartManager;
 import ltd.newbee.mall.util.BeanUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +38,17 @@ public class NewBeeMallCartManagerImpl implements NewBeeMallCartManager {
     @Autowired
     private NewBeeMallGoodsMapper newBeeMallGoodsMapper;
 
+    private static Logger logger = LoggerFactory.getLogger(NewBeeMallCartManagerImpl.class);
+
     @Transactional
     @Override
     public String saveNewBeeMallCartItem(NewBeeMallShoppingCartItem newBeeMallShoppingCartItem,
             Long userId) {
+        logger.info("saveNewBeeMallCartItem newBeeMallShoppingCartItem = {}, userId = {}", JSON.toJSON(newBeeMallShoppingCartItem), userId);
         NewBeeMallShoppingCartItem haveCartItem =
                 getCartItem(userId, newBeeMallShoppingCartItem.getGoodsId());
         if (haveCartItem != null) {
-            haveCartItem.setGoodsCount(newBeeMallShoppingCartItem.getGoodsCount());
+            haveCartItem.setGoodsCount(haveCartItem.getGoodsCount() + newBeeMallShoppingCartItem.getGoodsCount());
             return updateNewBeeMallCartItem(haveCartItem);
         }
         NewBeeMallGoods newBeeMallGoods =
@@ -47,7 +56,7 @@ public class NewBeeMallCartManagerImpl implements NewBeeMallCartManager {
         if (newBeeMallGoods == null) {
             return ServiceResultEnum.GOODS_NOT_EXIST.getResult();
         }
-
+        newBeeMallShoppingCartItem.setUserId(userId);
         if (newBeeMallShoppingCartItemMapper.insertSelective(newBeeMallShoppingCartItem) > 0) {
             return ServiceResultEnum.SUCCESS.getResult();
         }
@@ -153,6 +162,8 @@ public class NewBeeMallCartManagerImpl implements NewBeeMallCartManager {
                     newBeeMallShoppingCartItemVO.setGoodsName(goodsName);
                     newBeeMallShoppingCartItemVO.setSellingPrice(newBeeMallGoodsTemp
                             .getSellingPrice());
+                    newBeeMallShoppingCartItemVO.setRealSellingPrice(new BigDecimal(newBeeMallGoodsTemp
+                            .getSellingPrice()).divide(new BigDecimal("100")));
                     newBeeMallShoppingCartItemVOS.add(newBeeMallShoppingCartItemVO);
                 }
             }

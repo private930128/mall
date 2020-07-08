@@ -1,5 +1,6 @@
 package ltd.newbee.mall.manager;
 
+import ltd.newbee.mall.app.dto.CreateOrderRequest;
 import ltd.newbee.mall.common.PayStatusEnum;
 import ltd.newbee.mall.controller.vo.NewBeeMallOrderDetailVO;
 import ltd.newbee.mall.controller.vo.NewBeeMallOrderListVO;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public interface NewBeeMallOrderManager {
 
-    String createOrder(NewBeeMallUserVO user, List<NewBeeMallShoppingCartItemVO> myShoppingCartItems);
+    String createOrder(NewBeeMallUserVO user, CreateOrderRequest createOrderRequest);
 
     NewBeeMallOrderDetailVO getOrderDetailByOrderNo(String orderNo, Long userId);
 

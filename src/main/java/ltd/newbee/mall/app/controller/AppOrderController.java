@@ -9,8 +9,10 @@ import ltd.newbee.mall.app.dto.PaymentRequestDto;
 import ltd.newbee.mall.config.redis.RedisUtil;
 import ltd.newbee.mall.controller.vo.NewBeeMallUserVO;
 import ltd.newbee.mall.dao.MallUserMapper;
+import ltd.newbee.mall.entity.AddressManagement;
 import ltd.newbee.mall.entity.MallUser;
 import ltd.newbee.mall.manager.NewBeeMallOrderManager;
+import ltd.newbee.mall.service.AddressManagementService;
 import ltd.newbee.mall.service.PaymentService;
 import ltd.newbee.mall.util.PageQueryUtil;
 import ltd.newbee.mall.util.Result;
@@ -49,6 +51,9 @@ public class AppOrderController {
     @Autowired
     private PaymentService paymentService;
 
+    @Resource
+    private AddressManagementService addressManagementService;
+
     @RequestMapping(value = "/createOrder", method = RequestMethod.POST)
     @ResponseBody
     public Result createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
@@ -66,11 +71,24 @@ public class AppOrderController {
         if (CollectionUtils.isEmpty(mallUserList)) {
             return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
         }
+        if (createOrderRequest.getAddressManagementId() == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_ADDRESS_IS_NULL.getCode(), ResultMsgEnum.ORDER_ADDRESS_IS_NULL.getMsg());
+        }
+        AddressManagement addressManagement = addressManagementService.getAddressInfoById(mallUserList.get(0).getUserId(), createOrderRequest.getAddressManagementId());
+        if (addressManagement == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.ORDER_ADDRESS_IS_ERROR.getCode(), ResultMsgEnum.ORDER_ADDRESS_IS_ERROR.getMsg());
+        }
+        if (createOrderRequest.getFromType() == 1 && CollectionUtils.isEmpty(createOrderRequest.getCartItemIdList())) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.CART_ITEM_LIST_IS_EMPTY.getCode(), ResultMsgEnum.CART_ITEM_LIST_IS_EMPTY.getMsg());
+        }
+        createOrderRequest.setAddress(addressManagement.getAddress());
+        createOrderRequest.setConsigneeName(addressManagement.getConsigneeName());
+        createOrderRequest.setPhone(addressManagement.getPhone());
         NewBeeMallUserVO userVO = new NewBeeMallUserVO();
         userVO.setUserId(mallUserList.get(0).getUserId());
         userVO.setChannelId(1);
         userVO.setAddress(mallUserList.get(0).getAddress());
-        String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest.getGoodsInfo());
+        String orderNo = newBeeMallOrderManager.createOrder(userVO, createOrderRequest);
         return ResultGenerator.genSuccessDateResult(orderNo);
     }
 

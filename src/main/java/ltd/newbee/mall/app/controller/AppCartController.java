@@ -3,6 +3,8 @@ package ltd.newbee.mall.app.controller;
 import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +145,7 @@ public class AppCartController extends BaseController {
          * resultObj.put("checkedAddress", new AddressVo()); } else {
          * resultObj.put("checkedAddress", addressEntities.get(0)); }
          */
-        resultObj.put("checkedAddress", "北京");
+//        resultObj.put("checkedAddress", "北京");
         Long goodsTotalPrice;
         /*
          * Map<String, Object> cartData = (Map<String, Object>) this.getCart(loginUser);
@@ -184,8 +186,12 @@ public class AppCartController extends BaseController {
 
         }
 
+        for (NewBeeMallShoppingCartItemVO newBeeMallShoppingCartItemVO : cartList) {
+            newBeeMallShoppingCartItemVO.setRealSellingPrice(new BigDecimal(newBeeMallShoppingCartItemVO.getSellingPrice()).divide(new BigDecimal(100)));
+        }
+
         resultObj.put("goodsCount", goodsCount);
-        resultObj.put("priceTotal", priceTotal);
+        resultObj.put("priceTotal", new BigDecimal(priceTotal).divide(new BigDecimal(100)));
         resultObj.put("cartList", cartList);
         resultObj.put("couponPrice", couponPrice);
         return ResultGenerator.genSuccessDateResult(resultObj);

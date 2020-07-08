@@ -8,6 +8,7 @@ import ltd.newbee.mall.entity.AddressManagementExample;
 import ltd.newbee.mall.service.AddressManagementService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  * Created by zhanghenan on 2020/6/13.
  */
+@Service
 public class AddressManagementServiceImpl implements AddressManagementService {
 
     @Resource
@@ -58,6 +60,7 @@ public class AddressManagementServiceImpl implements AddressManagementService {
     public List<AddressManagement> listAddressManagementByUser(Long userId) {
         AddressManagementExample example = new AddressManagementExample();
         example.createCriteria().andUserIdEqualTo(userId);
+        example.setOrderByClause("id desc");
         List<AddressManagement> list = addressManagementMapper.selectByExample(example);
         return CollectionUtils.isEmpty(list) ? Lists.newArrayList() : list;
     }
@@ -69,6 +72,14 @@ public class AddressManagementServiceImpl implements AddressManagementService {
         AddressManagement addressManagement = new AddressManagement();
         addressManagement.setDefaultStatus(DefaultAddressStatusEnum.NOT.getValue());
         return addressManagementMapper.updateByExampleSelective(addressManagement, example) > 0;
+    }
+
+    @Override
+    public AddressManagement getAddressInfoById(Long userId, Long id) {
+        AddressManagementExample example = new AddressManagementExample();
+        example.createCriteria().andUserIdEqualTo(userId).andIdEqualTo(id);
+        List<AddressManagement> list = addressManagementMapper.selectByExample(example);
+        return CollectionUtils.isEmpty(list) ? null : list.get(0);
     }
 
 }

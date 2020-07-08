@@ -22,7 +22,12 @@ public enum ResultMsgEnum {
     ORDER_NOT_EXIST(2002, "该订单不存在!!"),
 
     MSG_LIMIT_IN_ONE_MINUTE(3001, "一分钟内短信发送受限"),
-    MSG_LIMIT_IN_ONE_DAY(3002, "当天短信发送受限");
+    MSG_LIMIT_IN_ONE_DAY(3002, "当天短信发送受限"),
+
+    ORDER_ADDRESS_IS_NULL(4001, "请选择下单地址"),
+    ORDER_ADDRESS_IS_ERROR(4002, "下单地址不存在,请重新选择其他地址"),
+    CART_ITEM_LIST_IS_EMPTY(4003, "请选择商品进行下单");
+
 
     private Integer code;
     private String msg;

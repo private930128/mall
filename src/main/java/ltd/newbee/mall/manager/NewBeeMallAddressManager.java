@@ -18,4 +18,6 @@ public interface NewBeeMallAddressManager {
     int updateAddressManagement(AddressManagement addressManagement);
 
     void setDefaultAddressManagement(Long id, Long userId);
+
+    AddressManagement getAddressInfoById(Long userId, Long id);
 }

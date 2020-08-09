@@ -59,6 +59,6 @@ public class NewBeeMallAddressManagerImpl implements NewBeeMallAddressManager {
 
     @Override
     public int deleteAddress(Long userId, Long id) {
-        return 0;
+        return addressManagementService.deleteAddress(userId, id);
     }
 }

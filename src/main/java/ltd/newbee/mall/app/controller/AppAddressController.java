@@ -172,4 +172,23 @@ public class AppAddressController {
         newBeeMallAddressManager.setDefaultAddressManagement(addressRequestDto.getId(), mallUserList.get(0).getUserId());
         return ResultGenerator.genSuccessResult();
     }
+
+    @RequestMapping(value = "/deleteAddress", method = RequestMethod.POST)
+    @ResponseBody
+    public Result deleteAddress(@RequestBody AddressRequestDto addressRequestDto) {
+        Object object = redisUtil.get(addressRequestDto.getToken());
+        if (object == null) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        String openId = object.toString();
+        if (StringUtils.isEmpty(openId)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        List<MallUser> mallUserList = mallUserMapper.selectByOpenId(openId);
+        if (CollectionUtils.isEmpty(mallUserList)) {
+            return ResultGenerator.genErrorResult(ResultMsgEnum.LOGIN_INFO_IS_NULL.getCode(), ResultMsgEnum.LOGIN_INFO_IS_NULL.getMsg());
+        }
+        newBeeMallAddressManager.deleteAddress(mallUserList.get(0).getUserId(), addressRequestDto.getId());
+        return ResultGenerator.genSuccessResult();
+    }
 }

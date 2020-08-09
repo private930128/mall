@@ -20,4 +20,6 @@ public interface NewBeeMallAddressManager {
     void setDefaultAddressManagement(Long id, Long userId);
 
     AddressManagement getAddressInfoById(Long userId, Long id);
+
+    int deleteAddress(Long userId, Long id);
 }

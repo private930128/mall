@@ -56,4 +56,9 @@ public class NewBeeMallAddressManagerImpl implements NewBeeMallAddressManager {
     public AddressManagement getAddressInfoById(Long userId, Long id) {
         return addressManagementService.getAddressInfoById(userId, id);
     }
+
+    @Override
+    public int deleteAddress(Long userId, Long id) {
+        return 0;
+    }
 }

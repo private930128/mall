@@ -82,4 +82,11 @@ public class AddressManagementServiceImpl implements AddressManagementService {
         return CollectionUtils.isEmpty(list) ? null : list.get(0);
     }
 
+    @Override
+    public int deleteAddress(Long userId, Long id) {
+        AddressManagementExample example = new AddressManagementExample();
+        example.createCriteria().andUserIdEqualTo(userId).andIdEqualTo(id);
+        return addressManagementMapper.deleteByExample(example);
+    }
+
 }

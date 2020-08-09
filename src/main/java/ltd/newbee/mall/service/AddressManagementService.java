@@ -23,4 +23,6 @@ public interface AddressManagementService {
     boolean setNotDefaultWhichIsDefault(Long userId);
 
     AddressManagement getAddressInfoById(Long userId, Long id);
+
+    int deleteAddress(Long userId, Long id);
 }

@@ -9,7 +9,6 @@ public interface PromotionManager {
 
     /**
      * 计算购物车中的促销活动信息
-     * 
      * @param cartItemList 购物车
      */
     List<CartPromotionItem> calcCartPromotion(List<NewBeeMallShoppingCartItem> cartItemList);

@@ -4,9 +4,7 @@ import java.util.List;
 import ltd.newbee.mall.app.dto.CartPromotionItem;
 import ltd.newbee.mall.entity.NewBeeMallShoppingCartItem;
 
-/**
- * Created by wangyf on 2020/6/6. 促销管理Service
- */
+
 public interface PromotionManager {
 
     /**

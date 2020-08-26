@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import lombok.Data;
 import ltd.newbee.mall.entity.NewBeeMallShoppingCartItem;
 
-/**
- * Created by wangyf on 2020/6/6. 购物车中促销信息的封装
- */
 @Data
 public class CartPromotionItem extends NewBeeMallShoppingCartItem {
 
